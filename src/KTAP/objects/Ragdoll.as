@@ -1,14 +1,15 @@
 package KTAP.objects
 {
-	import Box2D.Dynamics.b2World;
-	
-	import Box2D.Collision.b2Bound;
 	import Box2D.Collision.Shapes.b2CircleShape;
 	import Box2D.Collision.Shapes.b2PolygonShape;
+	import Box2D.Collision.b2Bound;
 	import Box2D.Common.Math.b2Vec2;
-	import Box2D.Dynamics.b2Body;
 	import Box2D.Dynamics.Joints.b2JointDef;
+	import Box2D.Dynamics.Joints.b2MouseJointDef;
 	import Box2D.Dynamics.Joints.b2RevoluteJointDef;
+	import Box2D.Dynamics.b2Body;
+	import Box2D.Dynamics.b2World;
+
 //	import com.physics.World;
 	/**
 	 * ...
@@ -70,7 +71,7 @@ package KTAP.objects
 			head.CreateFixture(fixtureDef);
 			
 			//CREATE THE TORSO
-			boxDef.SetAsBox(15 / m_physScale, 10 / m_physScale);
+			boxDef.SetAsBox(15 / m_physScale, 30 / m_physScale);
 			
 			//create the fixture
 			fixtureDef.shape = boxDef;
@@ -79,9 +80,11 @@ package KTAP.objects
 			fixtureDef.restitution = 0.1;
 			
 			//set position
-			bodyDef.position.Set(startX / m_physScale, (startY + 28) / m_physScale);
+			bodyDef.position.Set(startX / m_physScale, (startY + 38) / m_physScale);
 			torso = m_world.CreateBody(bodyDef);
 			torso.CreateFixture(fixtureDef);
+			
+			/*
 			
 			// THE SECOND TORSO SEGMENT
 			boxDef = new b2PolygonShape();
@@ -100,6 +103,7 @@ package KTAP.objects
 			bodyDef.position.Set(startX / m_physScale, (startY + 58) / m_physScale);
 			torso3 = m_world.CreateBody(bodyDef);
 			torso3.CreateFixture(fixtureDef);
+			*/
 			
 			// CREATE THE UPPER ARM
 			fixtureDef.density =  density;
@@ -218,6 +222,7 @@ package KTAP.objects
 			jointDef.Initialize(upperArmR, lowerArmR, new b2Vec2((startX + 45) / m_physScale, (startY + 20) / m_physScale));
 			m_world.CreateJoint(jointDef);
 			
+			/*
 			// Shoulders/stomach
 			jointDef.lowerAngle = -15 / (180/Math.PI);
 			jointDef.upperAngle = 15 / (180/Math.PI);
@@ -227,17 +232,18 @@ package KTAP.objects
 			// Stomach/hips
 			jointDef.Initialize(torso2, torso3, new b2Vec2(startX / m_physScale, (startY + 50) / m_physScale));
 			m_world.CreateJoint(jointDef);
+			*/
 			
 			// Torso to upper leg
 			// L
 			jointDef.lowerAngle = -25 / (180/Math.PI);
 			jointDef.upperAngle = 45 / (180/Math.PI);
-			jointDef.Initialize(torso3, upperLegL, new b2Vec2((startX - 8) / m_physScale, (startY + 72) / m_physScale));
+			jointDef.Initialize(torso, upperLegL, new b2Vec2((startX - 8) / m_physScale, (startY + 72) / m_physScale));
 			m_world.CreateJoint(jointDef);
 			// R
 			jointDef.lowerAngle = -45 / (180/Math.PI);
 			jointDef.upperAngle = 25 / (180/Math.PI);
-			jointDef.Initialize(torso3, upperLegR, new b2Vec2((startX + 8) / m_physScale, (startY + 72) / m_physScale));
+			jointDef.Initialize(torso, upperLegR, new b2Vec2((startX + 8) / m_physScale, (startY + 72) / m_physScale));
 			m_world.CreateJoint(jointDef);
 			
 			// Upper leg to lower leg
@@ -251,6 +257,18 @@ package KTAP.objects
 			jointDef.upperAngle = 25 / (180/Math.PI);
 			jointDef.Initialize(upperLegR, lowerLegR, new b2Vec2((startX + 8) / m_physScale, (startY + 105) / m_physScale));
 			m_world.CreateJoint(jointDef);
+			/*
+			// Paul: create joint in head
+			var md:b2MouseJointDef = new b2MouseJointDef();
+			md.bodyA = m_world.GetGroundBody();
+			md.bodyB = body;
+			md.target.Set(mouseXWorldPhys, mouseYWorldPhys);
+			md.collideConnected = true;
+			md.maxForce = 500.0 * body.GetMass();
+			m_mouseJoint = m_world.CreateJoint(md) as b2MouseJoint;
+			body.SetAwake(true);
+			*/
+
 		}
 		
 		public override function Update():void{}

@@ -67,6 +67,7 @@ package TestBed{
 			dbgDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
 			m_world.SetDebugDraw(dbgDraw);
 			
+			/*
 			// Create border of boxes
 			var wall:b2PolygonShape= new b2PolygonShape();
 			var wallBd:b2BodyDef = new b2BodyDef();
@@ -90,6 +91,7 @@ package TestBed{
 			wallBd.position.Set(640 / m_physScale / 2, (360 + 95) / m_physScale);
 			wallB = m_world.CreateBody(wallBd);
 			wallB.CreateFixture2(wall);
+			*/
 		}
 		
 		
@@ -174,7 +176,7 @@ package TestBed{
 					md.bodyB = body;
 					md.target.Set(mouseXWorldPhys, mouseYWorldPhys);
 					md.collideConnected = true;
-					md.maxForce = 300.0 * body.GetMass();
+					md.maxForce = 500.0 * body.GetMass();
 					m_mouseJoint = m_world.CreateJoint(md) as b2MouseJoint;
 					body.SetAwake(true);
 				}

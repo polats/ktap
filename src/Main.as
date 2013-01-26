@@ -31,7 +31,7 @@ import General.*
 import TestBed.*;
 
 import flash.display.MovieClip;
-	[SWF(width='640', height='360', backgroundColor='#292C2C', frameRate='30')]
+	[SWF(width='1024', height='768', backgroundColor='#292C2C', frameRate='30')]
 	public class Main extends MovieClip{
 		public function Main() {
 			addEventListener(Event.ENTER_FRAME, update, false, 0, true);
