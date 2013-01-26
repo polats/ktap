@@ -5,9 +5,12 @@ package KTAP.objects
 	import Box2D.Collision.b2Bound;
 	import Box2D.Common.Math.b2Vec2;
 	import Box2D.Dynamics.Joints.b2JointDef;
+	import Box2D.Dynamics.Joints.b2MouseJoint;
 	import Box2D.Dynamics.Joints.b2MouseJointDef;
 	import Box2D.Dynamics.Joints.b2RevoluteJointDef;
 	import Box2D.Dynamics.b2Body;
+	import Box2D.Dynamics.b2BodyDef;
+	import Box2D.Dynamics.b2FixtureDef;
 	import Box2D.Dynamics.b2World;
 
 //	import com.physics.World;
@@ -195,7 +198,78 @@ package KTAP.objects
 			// JOINTS
 			jointDef = new b2RevoluteJointDef();
 			jointDef.enableLimit = true;
+
+/*
+			var sd:b2PolygonShape = new b2PolygonShape();
+			var fixtureDef2:b2FixtureDef = new b2FixtureDef();
+			sd.SetAsBox(24 / m_physScale, 5 / m_physScale);
+			fixtureDef2.shape = sd;
+			fixtureDef2.density = 20.0;
+			fixtureDef2.friction = 0.2;
 			
+			var bd:b2BodyDef = new b2BodyDef();
+			bd.type = b2Body.b2_dynamicBody;
+			
+			var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
+			const numPlanks:int = 1;
+			jd.lowerAngle = -15 / (180/Math.PI);
+			jd.upperAngle = 15 / (180/Math.PI);
+			jd.enableLimit = true;
+			
+			var i:int;
+			var anchor:b2Vec2 = new b2Vec2();
+			var ground:b2Body = m_world.GetGroundBody();
+			
+			var prevBody:b2Body = ground;
+			for (i = 0; i < numPlanks; ++i)
+			{
+				bd.position.Set((100 + 22 + 44 * i) / m_physScale, 250 / m_physScale);
+				body = m_world.CreateBody(bd);
+				body.CreateFixture(fixtureDef);
+				
+				anchor.Set((100 + 44 * i) / m_physScale, 250 / m_physScale);
+				jd.Initialize(head, torso, head.GetPosition());
+				m_world.CreateJoint(jd);
+				
+				prevBody = body;
+			}
+			
+			anchor.Set((100 + 44 * numPlanks) / m_physScale, 250 / m_physScale);
+			jd.Initialize(prevBody, ground, anchor);
+			m_world.CreateJoint(jd);
+*/						
+			
+			
+/*			
+			// Body to Head
+/////////////
+			var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
+				const numPlanks:int = 2;
+				jd.lowerAngle = -15 / (180/Math.PI);
+				jd.upperAngle = 15 / (180/Math.PI);
+				jd.enableLimit = true;
+				
+				var prevBody:b2Body = ground;
+				for (i = 0; i < numPlanks; ++i)
+				{
+					bd.position.Set((100 + 22 + 44 * i) / m_physScale, 250 / m_physScale);
+					body = m_world.CreateBody(bd);
+					body.CreateFixture(fixtureDef);
+					
+					anchor.Set((100 + 44 * i) / m_physScale, 250 / m_physScale);
+					jd.Initialize(prevBody, body, anchor);
+					m_world.CreateJoint(jd);
+					
+					prevBody = body;
+				}
+				
+				anchor.Set((100 + 44 * numPlanks) / m_physScale, 250 / m_physScale);
+				jd.Initialize(prevBody, ground, anchor);
+				m_world.CreateJoint(jd);
+			}
+
+//////////////			
+*/			
 			// Head to shoulders
 			jointDef.lowerAngle = -40 / (180/Math.PI);
 			jointDef.upperAngle = 40 / (180/Math.PI);
@@ -261,17 +335,7 @@ package KTAP.objects
 			jointDef.upperAngle = 25 / (180/Math.PI);
 			jointDef.Initialize(upperLegR, lowerLegR, new b2Vec2((startX + 8) / m_physScale, (startY + 105) / m_physScale));
 			m_world.CreateJoint(jointDef);
-			/*
-			// Paul: create joint in head
-			var md:b2MouseJointDef = new b2MouseJointDef();
-			md.bodyA = m_world.GetGroundBody();
-			md.bodyB = body;
-			md.target.Set(mouseXWorldPhys, mouseYWorldPhys);
-			md.collideConnected = true;
-			md.maxForce = 500.0 * body.GetMass();
-			m_mouseJoint = m_world.CreateJoint(md) as b2MouseJoint;
-			body.SetAwake(true);
-			*/
+			
 
 		}
 		

@@ -49,16 +49,17 @@ package TestBed{
 			var bd:b2BodyDef = new b2BodyDef();
 			var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
 			var fixtureDef:b2FixtureDef = new b2FixtureDef();
+			var ground:b2Body = m_world.GetGroundBody();
 			
-			for (var i:int = 0; i < 10; i++){
-				var startX:Number = 70 + Math.random() * 20 + 480 * i;
+			for (var i:int = 0; i < 7; i++){
+				var startX:Number = 45 + 200 * i;
 				var startY:Number = 20 + Math.random() * 50;
 				
 				var tmpRagdoll:Ragdoll = new Ragdoll( startX, startY, m_world, m_physScale );
 				m_sprite.addChild( tmpRagdoll );				
 				_arrRagdolls.push( tmpRagdoll );
 			}
-			
+
 			/*
 			var head:b2Body;
 			

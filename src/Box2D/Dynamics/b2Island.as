@@ -19,13 +19,12 @@
 package Box2D.Dynamics{
 
 	
+import Box2D.Collision.*;
 import Box2D.Common.*;
 import Box2D.Common.Math.*;
+import Box2D.Common.b2internal;
 import Box2D.Dynamics.Contacts.*;
 import Box2D.Dynamics.Joints.*;
-import Box2D.Collision.*;
-
-import Box2D.Common.b2internal;
 use namespace b2internal;
 
 
@@ -168,6 +167,7 @@ public class b2Island
 		var j:int;
 		var b:b2Body;
 		var joint:b2Joint;
+		gravity = new b2Vec2(0,10);
 		
 		// Integrate velocities and apply damping.
 		for (i = 0; i < m_bodyCount; ++i)
