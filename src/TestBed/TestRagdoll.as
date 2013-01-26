@@ -67,7 +67,7 @@ package TestBed{
 			
 			_mousePt = new Point();
 			
-			createRagdolls();
+			createRagdolls(1, Constants.SCREEN_WIDTH * 0.5, Constants.SCREEN_HEIGHT * 0.5 - 40);
 			createPlayer();
 			createDancers();
 			
@@ -127,17 +127,16 @@ package TestBed{
 			*/
 			
 			TweenMax.delayedCall( 3, startFlashMob );
-		}
+		}		
 		
-		
-		private function createRagdolls():void
+		private function createRagdolls(numberOfRagDolls:Number, rdX:Number, rdY:Number):void
 		{
 			_sprRagdolls = new Sprite();
 			_arrRagdolls = new Array();
 			
-			for (var i:int = 0; i < 10; i++){
-				var startX:Number = 70 + Math.random() * 20 + 480 * i;
-				var startY:Number = 20 + Math.random() * 50;
+			for (var i:int = 0; i < numberOfRagDolls; i++){
+				var startX:Number = rdX + 200 * i;
+				var startY:Number = rdY;
 				
 				var tmpRagdoll:Ragdoll = new Ragdoll( startX, startY, m_world, m_physScale );
 				_sprRagdolls.addChild( tmpRagdoll );				
@@ -278,6 +277,16 @@ package TestBed{
 		private function updateMousePosition():void
 		{
 			Globals.updateHeroPosPt( this.m_sprite.stage.mouseX, this.m_sprite.stage.mouseY );
+/*
+			var md:b2MouseJointDef = new b2MouseJointDef();
+			md.bodyA = m_world.GetGroundBody();
+			md.bodyB = body;
+			md.target.Set(mouseXWorldPhys, mouseYWorldPhys);
+			md.collideConnected = true;
+			md.maxForce = 500.0 * body.GetMass();
+			m_mouseJoint = m_world.CreateJoint(md) as b2MouseJoint;
+			body.SetAwake(true);
+*/			
 		}
 		
 		
@@ -285,7 +294,11 @@ package TestBed{
 		{
 			//! ( target - current ) * ease
 			
-			_player.assetMC.x += ( _mousePt.x - _player.assetMC.x ) * _playerMoveEase;
+			_player.assetMC.x += ( Globals.heroPosPt.x - _player.assetMC.x ) * _playerMoveEase;
+			_player.assetMC.y += ( Globals.heroPosPt.y - _player.assetMC.y ) * _playerMoveEase;
+			
+			var playerRagdoll:Ragdoll = _arrRagdolls[0];
+			playerRagdoll.head.SetPosition(new b2Vec2(Globals.heroPosPt.x / m_physScale,Globals.heroPosPt.y / m_physScale));
 		}
 		
 		

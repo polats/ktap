@@ -167,7 +167,7 @@ public class b2Island
 		var j:int;
 		var b:b2Body;
 		var joint:b2Joint;
-		gravity = new b2Vec2(0,10);
+		gravity = new b2Vec2(0,0.1);
 		
 		// Integrate velocities and apply damping.
 		for (i = 0; i < m_bodyCount; ++i)

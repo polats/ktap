@@ -4,6 +4,7 @@ package KTAP.objects
 	import Box2D.Collision.Shapes.b2PolygonShape;
 	import Box2D.Collision.b2Bound;
 	import Box2D.Common.Math.b2Vec2;
+	import Box2D.Dynamics.Joints.b2Joint;
 	import Box2D.Dynamics.Joints.b2JointDef;
 	import Box2D.Dynamics.Joints.b2MouseJoint;
 	import Box2D.Dynamics.Joints.b2MouseJointDef;
@@ -23,10 +24,10 @@ package KTAP.objects
 	{
 		
 		private var circleShape:b2CircleShape;
-		
+				
 		//head
 		public var head:b2Body;
-		protected var torso:b2Body;
+		public var torso:b2Body;
 		protected var torso2:b2Body;
 		protected var torso3:b2Body;
 		
@@ -44,6 +45,8 @@ package KTAP.objects
 		
 		//joints
 		protected var jointDef:b2RevoluteJointDef;
+		protected var anchorJoint1:b2Joint;
+		protected var anchorJoint2:b2Joint;
 		
 		//fixture details
 		protected var density:Number = .1;
@@ -53,9 +56,9 @@ package KTAP.objects
 		{
 			super(p_world, p_physScale);
 			
-//			graphics.beginFill( 0xAA0000, 1 );
-//			graphics.drawRect( 0, 0, 20, 20 );
-//			graphics.endFill();
+			graphics.beginFill( 0xAA0000, 1 );
+			graphics.drawRect( 0, 0, 20, 20 );
+			graphics.endFill();
 			
 			var startX:Number = _x;
 			var startY:Number =_y ;
@@ -198,46 +201,9 @@ package KTAP.objects
 			// JOINTS
 			jointDef = new b2RevoluteJointDef();
 			jointDef.enableLimit = true;
-
-/*
-			var sd:b2PolygonShape = new b2PolygonShape();
-			var fixtureDef2:b2FixtureDef = new b2FixtureDef();
-			sd.SetAsBox(24 / m_physScale, 5 / m_physScale);
-			fixtureDef2.shape = sd;
-			fixtureDef2.density = 20.0;
-			fixtureDef2.friction = 0.2;
 			
-			var bd:b2BodyDef = new b2BodyDef();
-			bd.type = b2Body.b2_dynamicBody;
+			//positionHeadAnchor(startX, startY);
 			
-			var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
-			const numPlanks:int = 1;
-			jd.lowerAngle = -15 / (180/Math.PI);
-			jd.upperAngle = 15 / (180/Math.PI);
-			jd.enableLimit = true;
-			
-			var i:int;
-			var anchor:b2Vec2 = new b2Vec2();
-			var ground:b2Body = m_world.GetGroundBody();
-			
-			var prevBody:b2Body = ground;
-			for (i = 0; i < numPlanks; ++i)
-			{
-				bd.position.Set((100 + 22 + 44 * i) / m_physScale, 250 / m_physScale);
-				body = m_world.CreateBody(bd);
-				body.CreateFixture(fixtureDef);
-				
-				anchor.Set((100 + 44 * i) / m_physScale, 250 / m_physScale);
-				jd.Initialize(head, torso, head.GetPosition());
-				m_world.CreateJoint(jd);
-				
-				prevBody = body;
-			}
-			
-			anchor.Set((100 + 44 * numPlanks) / m_physScale, 250 / m_physScale);
-			jd.Initialize(prevBody, ground, anchor);
-			m_world.CreateJoint(jd);
-*/						
 			
 			
 /*			
@@ -340,9 +306,41 @@ package KTAP.objects
 		}
 		
 		public override function Update():void{
-//			x = upperArmL.GetPosition().x * m_physScale;
-//			y = upperArmL.GetPosition().y * m_physScale;
-//			rotation  = upperArmL.GetAngle() * (180 / Math.PI);
+			x = upperArmL.GetPosition().x * m_physScale;
+			y = upperArmL.GetPosition().y * m_physScale;
+			rotation  = upperArmL.GetAngle() * (180 / Math.PI);
+			
+		}
+		
+		public function move(x:Number, y:Number):void {
+			if (anchorJoint1 != null)
+			{
+				m_world.DestroyJoint(anchorJoint1);
+				m_world.DestroyJoint(anchorJoint2);
+			}
+			
+			
+		}
+		
+		public function positionHeadAnchor(startX:Number, startY:Number):void{
+
+			if (anchorJoint1 != null)
+			{
+				m_world.DestroyJoint(anchorJoint1);
+				m_world.DestroyJoint(anchorJoint2);
+			}
+			
+			var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
+			var anchor:b2Vec2 = new b2Vec2();
+			var ground:b2Body = m_world.GetGroundBody();
+			var prevBody:b2Body = ground;
+			
+						
+			anchor.Set(startX / m_physScale, startY/ m_physScale);
+			jd.Initialize(head, ground, anchor);
+			anchorJoint2 = m_world.CreateJoint(jd);
+			
+			
 		}
 		
 		public override function Destroy():void
