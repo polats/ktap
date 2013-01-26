@@ -50,6 +50,10 @@ package KTAP.objects
 		{
 			super(p_world, p_physScale);
 			
+			graphics.beginFill( 0xAA0000, 1 );
+			graphics.drawRect( 0, 0, 20, 20 );
+			graphics.endFill();
+			
 			var startX:Number = _x;
 			var startY:Number =_y ;
 			bodyDef.type = b2Body.b2_dynamicBody;
@@ -271,7 +275,11 @@ package KTAP.objects
 
 		}
 		
-		public override function Update():void{}
+		public override function Update():void{
+//			x = upperArmL.GetPosition().x * m_physScale;
+//			y = upperArmL.GetPosition().y * m_physScale;
+//			rotation  = upperArmL.GetAngle() * (180 / Math.PI);
+		}
 		
 		public override function Destroy():void
 		{

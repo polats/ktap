@@ -50,14 +50,13 @@ package TestBed{
 			var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
 			var fixtureDef:b2FixtureDef = new b2FixtureDef();
 			
-			// Add 5 ragdolls along the top
-			for (var i:int = 0; i < 7; i++){
-				var startX:Number = 50 + 155 * i;
+			for (var i:int = 0; i < 10; i++){
+				var startX:Number = 70 + Math.random() * 20 + 480 * i;
 				var startY:Number = 20 + Math.random() * 50;
 				
 				var tmpRagdoll:Ragdoll = new Ragdoll( startX, startY, m_world, m_physScale );
-				_arrRagdolls.push( tmpRagdoll );				
-				
+				m_sprite.addChild( tmpRagdoll );				
+				_arrRagdolls.push( tmpRagdoll );
 			}
 			
 			/*
@@ -95,6 +94,27 @@ package TestBed{
 			head.CreateFixture(fixtureDef);
 			*/
 			
+		}
+		
+		
+		public override function Update():void
+		{
+			super.Update();
+			updateRagdolls();
+		}
+		
+		
+		private function updateRagdolls():void
+		{
+			var i:uint = 0;
+			var nMax:uint = _arrRagdolls.length;
+			var tmpRagdoll:Ragdoll;
+			
+			for( i = 0; i < nMax; i++ )
+			{
+				tmpRagdoll = _arrRagdolls[ i ];
+				tmpRagdoll.Update();
+			}
 		}
 		
 		
