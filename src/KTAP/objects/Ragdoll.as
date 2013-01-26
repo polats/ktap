@@ -50,9 +50,9 @@ package KTAP.objects
 		{
 			super(p_world, p_physScale);
 			
-			graphics.beginFill( 0xAA0000, 1 );
-			graphics.drawRect( 0, 0, 20, 20 );
-			graphics.endFill();
+//			graphics.beginFill( 0xAA0000, 1 );
+//			graphics.drawRect( 0, 0, 20, 20 );
+//			graphics.endFill();
 			
 			var startX:Number = _x;
 			var startY:Number =_y ;
