@@ -36,24 +36,42 @@ package TestBed{
 	import KTAP.objects.Player;
 	import KTAP.objects.Ragdoll;
 	
+	import com.greensock.TimelineMax;
 	import com.greensock.TweenMax;
+	import com.greensock.easing.Strong;
 	
+	import flash.display.MovieClip;
 	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.geom.Point;
 	
 	
 	
 	public class TestRagdoll extends Test{
 		
+		private var EVENT_SHOW_CROWD:String = "BGM_SHOW_CROWD";
+		
+		
 		//! Stored Mouse Position
 		private var _mousePt:Point;
 		private var _playerMoveEase:Number = 0.1;
 		
+		private var _bFollowMouse:Boolean = false;
+		
 		//! Game Objects
 		private var _arrRagdolls:Array;
-		private var _arrDancers:Array;
+		
+		private var _arrDancers1:Array;
+		private var _arrDancers2:Array;
+		private var _arrDancers3:Array;
+		private var _arrDancers4:Array;
+		private var _crowdIdx:uint = 0;
+		
 		private var _dancer:Dancer;
 		private var _player:Player;
+		private var _mcMusic:MovieClip;
+		private var _titleMC:MovieClip;
 		
 		//! Containers Only
 		private var _sprRagdolls:Sprite;
@@ -67,67 +85,53 @@ package TestBed{
 			
 			_mousePt = new Point();
 			
-			createRagdolls(1, Constants.SCREEN_WIDTH * 0.5, Constants.SCREEN_HEIGHT * 0.5 - 40);
+			//createRagdolls(1, Constants.SCREEN_WIDTH * 0.5, Constants.SCREEN_HEIGHT * 0.5 - 40);
 			createPlayer();
 			createDancers();
 			
-			this.m_sprite.addChild( _sprRagdolls );
-			this.m_sprite.addChild( _sprPlayer );
+			_mcMusic = new Assets_MusicMC();
+			
+//			this.m_sprite.addChild( _sprRagdolls );
 			this.m_sprite.addChild( _sprDancers );
+			this.m_sprite.addChild( _sprPlayer );
+			this.m_sprite.addChild( _mcMusic );
+			_mcMusic.visible = false;
+			_mcMusic.gotoAndStop( 1 );
+		
+//			addListeners();
+//			TweenMax.delayedCall( 3, startFlashMob );
 			
-			/*
-			var circ:b2CircleShape; 
-			var box:b2PolygonShape;
-			var bd:b2BodyDef = new b2BodyDef();
-			var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
-			var fixtureDef:b2FixtureDef = new b2FixtureDef();
-			var ground:b2Body = m_world.GetGroundBody();
+			_titleMC = new Assets_TitleMC();
+			this.m_sprite.addChild( _titleMC );
+			_titleMC.x = Constants.SCREEN_WIDTH * 0.5;
+			_titleMC.y = Constants.SCREEN_HEIGHT * 0.5 + 100;
 			
-			for (var i:int = 0; i < 7; i++){
-				var startX:Number = 45 + 200 * i;
-				var startY:Number = 20 + Math.random() * 50;
-				
-				var tmpRagdoll:Ragdoll = new Ragdoll( startX, startY, m_world, m_physScale );
-				m_sprite.addChild( tmpRagdoll );				
-				_arrRagdolls.push( tmpRagdoll );
-			}
-
-			var head:b2Body;
+			Globals.heroPosPt.x = Constants.SCREEN_WIDTH * 0.5;
+			Globals.heroPosPt.y = Constants.SCREEN_HEIGHT * 0.5 - 100;
 			
-			// Add stairs on the left, these are static bodies so set the type accordingly
-			bd.type = b2Body.b2_staticBody;
-			fixtureDef.density = 0.0;
-			fixtureDef.friction = 0.4;
-			fixtureDef.restitution = 0.3;
-			for (var j:int = 1; j <= 10; j++) {
-				box = new b2PolygonShape();
-				box.SetAsBox((10*j) / m_physScale, 10 / m_physScale);
-				fixtureDef.shape = box;
-				bd.position.Set((10*j) / m_physScale, (150 + 20*j) / m_physScale);
-				head = m_world.CreateBody(bd);
-				head.CreateFixture(fixtureDef);
-			}
-			
-			// Add stairs on the right
-			for (var k:int = 1; k <= 10; k++){
-				box = new b2PolygonShape();
-				box.SetAsBox((10 * k) / m_physScale, 10 / m_physScale);
-				fixtureDef.shape = box;
-				bd.position.Set((640-10*k) / m_physScale, (150 + 20*k) / m_physScale);
-				head = m_world.CreateBody(bd);
-				head.CreateFixture(fixtureDef);
-			}
-			
-			box = new b2PolygonShape();
-			box.SetAsBox(30 / m_physScale, 40 / m_physScale);
-			fixtureDef.shape = box;
-			bd.position.Set(320 / m_physScale, 320 / m_physScale);
-			head = m_world.CreateBody(bd);
-			head.CreateFixture(fixtureDef);
-			*/
-			
-			TweenMax.delayedCall( 3, startFlashMob );
+			Main.m_sprite.stage.addEventListener( KeyboardEvent.KEY_DOWN, onKeyPressed );
 		}		
+		
+		private function onKeyPressed( p_event:KeyboardEvent ):void
+		{
+//			if( p_event.keyCode == 13 )
+			{
+				Main.m_sprite.stage.removeEventListener( KeyboardEvent.KEY_DOWN, onKeyPressed );
+				animateStart();
+			}
+			
+			trace( p_event.keyCode );
+		}
+		
+		
+		private function animateStart():void
+		{
+			var tlEnterAnim:TimelineMax = new TimelineMax( { onComplete:addListeners } );
+			
+			tlEnterAnim.append( TweenMax.to( _titleMC, 1, { scaleX:0.8, scaleY:0.8, ease:Strong.easeIn } ) );
+			tlEnterAnim.append( TweenMax.to( _titleMC, 3, {  alpha:0, scaleX:3.0, scaleY:3.0, ease:Strong.easeOut } ) );
+			tlEnterAnim.play();
+		}
 		
 		private function createRagdolls(numberOfRagDolls:Number, rdX:Number, rdY:Number):void
 		{
@@ -160,20 +164,88 @@ package TestBed{
 		public function createDancers():void
 		{
 			_sprDancers = new Sprite();
-			_arrDancers = new Array();
+			_arrDancers1 = new Array();
+			_arrDancers2 = new Array();
+			_arrDancers3 = new Array();
+			_arrDancers4 = new Array();
 			
 			var i:uint = 0;
-			var nMax:uint = Constants.MAX_DANCERS;
+			var nMax:uint = Constants.MAX_DANCERS1;
 			var tmpDancer:Dancer;
+			
+			var dancerIdx:uint = 0;
+			
+			
+			//! dancers batch 4
+			i = 0;
+			nMax = Constants.MAX_DANCERS4;
 			
 			for( i = 0; i < nMax; i++ )
 			{
-				tmpDancer = new Dancer();
+				dancerIdx = MathFunctions.RandomFromRange( 1 , 2 ) - 1;
+				tmpDancer = new Dancer( dancerIdx );
 				_sprDancers.addChild( tmpDancer.assetMC );
 				
-				_arrDancers.push( tmpDancer );
+				_arrDancers4.push( tmpDancer );
 				randomizeDancerPosition( tmpDancer, i % 12 );
 			}
+			
+			
+			//! dancers batch 3
+			i = 0;
+			nMax = Constants.MAX_DANCERS3;
+			
+			for( i = 0; i < nMax; i++ )
+			{
+				dancerIdx = MathFunctions.RandomFromRange( 1 , 2 ) - 1;
+				tmpDancer = new Dancer( dancerIdx );
+				_sprDancers.addChild( tmpDancer.assetMC );
+				
+				_arrDancers3.push( tmpDancer );
+				randomizeDancerPosition( tmpDancer, ( Constants.MAX_DANCERS3 + i - 1 ) % 12 );
+			}
+			
+			
+			//! dancers batch 2
+			i = 0;
+			nMax = Constants.MAX_DANCERS2;
+			
+			for( i = 0; i < nMax; i++ )
+			{
+				dancerIdx = MathFunctions.RandomFromRange( 1 , 2 ) - 1;
+				tmpDancer = new Dancer( dancerIdx );
+				_sprDancers.addChild( tmpDancer.assetMC );
+				
+				_arrDancers2.push( tmpDancer );
+				randomizeDancerPosition( tmpDancer, ( Constants.MAX_DANCERS2 + i - 1 ) % 12 );
+			}
+			
+			
+			//! dancers batch 1
+			i = 0;
+			nMax = Constants.MAX_DANCERS1;
+			
+			
+			dancerIdx = 0;
+			
+			for( i = 0; i < nMax; i++ )
+			{
+				dancerIdx = MathFunctions.RandomFromRange( 1 , 2 ) - 1;
+				tmpDancer = new Dancer( dancerIdx );
+				_sprDancers.addChild( tmpDancer.assetMC );
+				
+				_arrDancers1.push( tmpDancer );
+				randomizeDancerPosition( tmpDancer, i % 12 );
+			}
+		}
+		
+		
+		private function addListeners():void
+		{
+			_mcMusic.addEventListener( EVENT_SHOW_CROWD, onShowCrowd );
+			_mcMusic.gotoAndPlay( 1 );
+			
+			_bFollowMouse = true;
 		}
 		
 		
@@ -264,10 +336,17 @@ package TestBed{
 		}
 		
 		
+		private function onShowCrowd( p_event:Event ):void
+		{
+			startFlashMob();
+		}
+		
+		
+		
 		public override function Update():void
 		{
 			super.Update();
-			updateRagdolls();
+//			updateRagdolls();
 			
 			updateMousePosition();
 			updatePlayer();
@@ -276,6 +355,9 @@ package TestBed{
 		
 		private function updateMousePosition():void
 		{
+			if( _bFollowMouse == false )
+				return;
+			
 			Globals.updateHeroPosPt( this.m_sprite.stage.mouseX, this.m_sprite.stage.mouseY );
 /*
 			var md:b2MouseJointDef = new b2MouseJointDef();
@@ -297,8 +379,8 @@ package TestBed{
 			_player.assetMC.x += ( Globals.heroPosPt.x - _player.assetMC.x ) * _playerMoveEase;
 			_player.assetMC.y += ( Globals.heroPosPt.y - _player.assetMC.y ) * _playerMoveEase;
 			
-			var playerRagdoll:Ragdoll = _arrRagdolls[0];
-			playerRagdoll.head.SetPosition(new b2Vec2(Globals.heroPosPt.x / m_physScale,Globals.heroPosPt.y / m_physScale));
+			//var playerRagdoll:Ragdoll = _arrRagdolls[0];
+			//playerRagdoll.head.SetPosition(new b2Vec2(Globals.heroPosPt.x / m_physScale,Globals.heroPosPt.y / m_physScale));
 		}
 		
 		
@@ -306,16 +388,32 @@ package TestBed{
 		{
 			//_dancer.startMobbing();
 			
+			if( _crowdIdx >= 4 )
+				return;
+			
+			
+			var tmpArray:Array;
+			
+			switch( _crowdIdx )
+			{
+				case 0: tmpArray = _arrDancers1; break;
+				case 1: tmpArray = _arrDancers2; break;
+				case 2: tmpArray = _arrDancers3; break;
+				case 3: tmpArray = _arrDancers4; break;
+			}
+			
+			_crowdIdx++;
+			
 			var i:uint = 0;
-			var nMax:uint = _arrDancers.length;
+			var nMax:uint = tmpArray.length;
 			var tmpDancer:Dancer;
 			
 			for( i = 0; i < nMax; i++ )
 			{
-				tmpDancer = _arrDancers[ i ];
-				tmpDancer.startMobbing();
+				tmpDancer = tmpArray[ i ];
+				_sprDancers.addChild( tmpDancer.assetMC );
+				tmpDancer.startMobbing( _crowdIdx - 1 );
 			}
-			
 		}
 		
 		

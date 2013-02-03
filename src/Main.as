@@ -18,19 +18,22 @@
 
 package{
 
-import Box2D.Dynamics.*
-import Box2D.Collision.*
-import Box2D.Collision.Shapes.*
-import Box2D.Dynamics.Joints.*
-import Box2D.Dynamics.Contacts.*
-import Box2D.Common.Math.*
-import flash.events.Event;
-import flash.display.*;
-import flash.text.*;
-import General.*
+import Box2D.Collision.*;
+import Box2D.Collision.Shapes.*;
+import Box2D.Common.Math.*;
+import Box2D.Dynamics.*;
+import Box2D.Dynamics.Contacts.*;
+import Box2D.Dynamics.Joints.*;
+
+import General.*;
+
 import TestBed.*;
 
+import flash.display.*;
 import flash.display.MovieClip;
+import flash.events.Event;
+import flash.text.*;
+
 	[SWF(width='1024', height='768', backgroundColor='#292C2C', frameRate='30')]
 	public class Main extends MovieClip{
 		public function Main() {
@@ -40,7 +43,10 @@ import flash.display.MovieClip;
 			m_fpsCounter.y = 5;
 			addChildAt(m_fpsCounter, 0);
 			
+			var beachBG:MovieClip = new Assets_BackgroundMC();
+			
 			m_sprite = new Sprite();
+			addChild( beachBG );
 			addChild(m_sprite);
 			// input
 			m_input = new Input(m_sprite);
@@ -58,7 +64,7 @@ import flash.display.MovieClip;
 			instructions_text.width = 495
 			instructions_text.height = 61
 			instructions_text.text = "Box2DFlashAS3 2.0.1\n'Left'/'Right' arrows to go to previous/next example. \n'R' to reset."
-			addChild(instructions_text);
+//			addChild(instructions_text);
 			
 			// textfield pointer
 			m_aboutText = new TextField();
@@ -69,7 +75,7 @@ import flash.display.MovieClip;
 			m_aboutText.y = 71
 			m_aboutText.width = 300
 			m_aboutText.height = 30
-			addChild(m_aboutText);
+//			addChild(m_aboutText);
 			
 			// Thanks to everyone who contacted me about this fix
 			instructions_text.mouseEnabled = false;
