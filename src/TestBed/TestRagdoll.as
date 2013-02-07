@@ -31,6 +31,8 @@ package TestBed{
 	
 	import KTAP.Constants;
 	import KTAP.Globals;
+	import KTAP.layers.LayerBackground;
+	import KTAP.layers.LayerDancers;
 	import KTAP.math.MathFunctions;
 	import KTAP.objects.Dancer;
 	import KTAP.objects.Player;
@@ -73,33 +75,40 @@ package TestBed{
 		private var _mcMusic:MovieClip;
 		private var _titleMC:MovieClip;
 		
+		//! Layers
+		private var _layerBackground:LayerBackground;
+		private var _layerDancers:LayerDancers;
+		
 		//! Containers Only
 		private var _sprRagdolls:Sprite;
-		private var _sprDancers:Sprite;
 		private var _sprPlayer:Sprite;
 		
 		public function TestRagdoll(){
 			
 			// Set Text field
-			Main.m_aboutText.text = "Ragdolls";
+//			Main.m_aboutText.text = "Ragdolls";
 			
 			_mousePt = new Point();
 			
 			//createRagdolls(1, Constants.SCREEN_WIDTH * 0.5, Constants.SCREEN_HEIGHT * 0.5 - 40);
 			createPlayer();
-			createDancers();
+//			createDancers();
 			
 			_mcMusic = new Assets_MusicMC();
 			
+			//! create layers
+			_layerBackground = new LayerBackground();
+			this.m_sprite.addChild( _layerBackground.assetMC );
+			
 //			this.m_sprite.addChild( _sprRagdolls );
-			this.m_sprite.addChild( _sprDancers );
+			
+			_layerDancers = new LayerDancers();
+			this.m_sprite.addChild( _layerDancers.assetSpr );
 			this.m_sprite.addChild( _sprPlayer );
 			this.m_sprite.addChild( _mcMusic );
 			_mcMusic.visible = false;
 			_mcMusic.gotoAndStop( 1 );
-		
-//			addListeners();
-//			TweenMax.delayedCall( 3, startFlashMob );
+
 			
 			_titleMC = new Assets_TitleMC();
 			this.m_sprite.addChild( _titleMC );
@@ -111,6 +120,7 @@ package TestBed{
 			
 			Main.m_sprite.stage.addEventListener( KeyboardEvent.KEY_DOWN, onKeyPressed );
 		}		
+		
 		
 		private function onKeyPressed( p_event:KeyboardEvent ):void
 		{
@@ -160,86 +170,6 @@ package TestBed{
 			_player.assetMC.y = Constants.SCREEN_HEIGHT * 0.5;
 		}
 		
-		
-		public function createDancers():void
-		{
-			_sprDancers = new Sprite();
-			_arrDancers1 = new Array();
-			_arrDancers2 = new Array();
-			_arrDancers3 = new Array();
-			_arrDancers4 = new Array();
-			
-			var i:uint = 0;
-			var nMax:uint = Constants.MAX_DANCERS1;
-			var tmpDancer:Dancer;
-			
-			var dancerIdx:uint = 0;
-			
-			
-			//! dancers batch 4
-			i = 0;
-			nMax = Constants.MAX_DANCERS4;
-			
-			for( i = 0; i < nMax; i++ )
-			{
-				dancerIdx = MathFunctions.RandomFromRange( 1 , 2 ) - 1;
-				tmpDancer = new Dancer( dancerIdx );
-				_sprDancers.addChild( tmpDancer.assetMC );
-				
-				_arrDancers4.push( tmpDancer );
-				randomizeDancerPosition( tmpDancer, i % 12 );
-			}
-			
-			
-			//! dancers batch 3
-			i = 0;
-			nMax = Constants.MAX_DANCERS3;
-			
-			for( i = 0; i < nMax; i++ )
-			{
-				dancerIdx = MathFunctions.RandomFromRange( 1 , 2 ) - 1;
-				tmpDancer = new Dancer( dancerIdx );
-				_sprDancers.addChild( tmpDancer.assetMC );
-				
-				_arrDancers3.push( tmpDancer );
-				randomizeDancerPosition( tmpDancer, ( Constants.MAX_DANCERS3 + i - 1 ) % 12 );
-			}
-			
-			
-			//! dancers batch 2
-			i = 0;
-			nMax = Constants.MAX_DANCERS2;
-			
-			for( i = 0; i < nMax; i++ )
-			{
-				dancerIdx = MathFunctions.RandomFromRange( 1 , 2 ) - 1;
-				tmpDancer = new Dancer( dancerIdx );
-				_sprDancers.addChild( tmpDancer.assetMC );
-				
-				_arrDancers2.push( tmpDancer );
-				randomizeDancerPosition( tmpDancer, ( Constants.MAX_DANCERS2 + i - 1 ) % 12 );
-			}
-			
-			
-			//! dancers batch 1
-			i = 0;
-			nMax = Constants.MAX_DANCERS1;
-			
-			
-			dancerIdx = 0;
-			
-			for( i = 0; i < nMax; i++ )
-			{
-				dancerIdx = MathFunctions.RandomFromRange( 1 , 2 ) - 1;
-				tmpDancer = new Dancer( dancerIdx );
-				_sprDancers.addChild( tmpDancer.assetMC );
-				
-				_arrDancers1.push( tmpDancer );
-				randomizeDancerPosition( tmpDancer, i % 12 );
-			}
-		}
-		
-		
 		private function addListeners():void
 		{
 			_mcMusic.addEventListener( EVENT_SHOW_CROWD, onShowCrowd );
@@ -248,100 +178,10 @@ package TestBed{
 			_bFollowMouse = true;
 		}
 		
-		
-		private function randomizeDancerPosition( p_dancer:Dancer, p_corderIdx:uint ):void
-		{
-			
-			// 0  |  1 |  2 |  3  
-			//    +--------+
-			// 4  |        |   5
-			//    |        |
-			// 6  |        |   7
-			//    +--------+   
-			// 8  | 9 | 10 |  11 
-			
-			var posX:Number;
-			var posY:Number;
-			
-			var nHalfScreenWidth:Number = Constants.SCREEN_WIDTH * 0.5;
-			var nHalfScreenHeight:Number = Constants.SCREEN_HEIGHT * 0.5;
-			
-			
-			switch( p_corderIdx )
-			{
-				case 0: //! upper left
-					posX = MathFunctions.RandomFromRange( nHalfScreenWidth * -1, 0 );
-					posY = MathFunctions.RandomFromRange( nHalfScreenHeight * -1, 0 );	
-					break;
-				
-				case 1: //! upper right
-					posX = MathFunctions.RandomFromRange( 0, nHalfScreenWidth );
-					posY = MathFunctions.RandomFromRange( nHalfScreenHeight * -1, 0 );
-					break;
-				
-				case 2: //! lower left
-					posX = MathFunctions.RandomFromRange( nHalfScreenWidth, Constants.SCREEN_WIDTH );
-					posY = MathFunctions.RandomFromRange( nHalfScreenHeight * -1, 0 );
-					break;
-				
-				case 3: //lower right
-					posX = MathFunctions.RandomFromRange( Constants.SCREEN_WIDTH, Constants.SCREEN_WIDTH + nHalfScreenWidth );
-					posY = MathFunctions.RandomFromRange( nHalfScreenHeight * -1, 0 );
-					break;
-				
-				case 4:
-					posX = MathFunctions.RandomFromRange( nHalfScreenWidth * -1, 0 );
-					posY = MathFunctions.RandomFromRange( 0, nHalfScreenHeight );
-					break;
-				
-				case 5:
-					posX = MathFunctions.RandomFromRange( Constants.SCREEN_WIDTH, Constants.SCREEN_WIDTH + nHalfScreenWidth );
-					posY = MathFunctions.RandomFromRange( 0, nHalfScreenHeight );
-					break;
-				
-				case 6:
-					posX = MathFunctions.RandomFromRange( nHalfScreenWidth * -1, 0 );
-					posY = MathFunctions.RandomFromRange( nHalfScreenHeight, Constants.SCREEN_HEIGHT );
-					break;
-				
-				case 7:
-					posX = MathFunctions.RandomFromRange( Constants.SCREEN_WIDTH, Constants.SCREEN_WIDTH + nHalfScreenWidth );
-					posY = MathFunctions.RandomFromRange( nHalfScreenHeight, Constants.SCREEN_HEIGHT );
-					break;
-				
-				case 8:
-					posX = MathFunctions.RandomFromRange( nHalfScreenWidth * -1, 0 );
-					posY = MathFunctions.RandomFromRange( Constants.SCREEN_HEIGHT, Constants.SCREEN_HEIGHT + nHalfScreenHeight );
-					break;
-				
-				case 9: //! upper right
-					posX = MathFunctions.RandomFromRange( 0, nHalfScreenWidth );
-					posY = MathFunctions.RandomFromRange( Constants.SCREEN_HEIGHT, Constants.SCREEN_HEIGHT + nHalfScreenHeight );
-					break;
-				
-				case 10: //! lower left
-					posX = MathFunctions.RandomFromRange( nHalfScreenWidth, Constants.SCREEN_WIDTH );
-					posY = MathFunctions.RandomFromRange( Constants.SCREEN_HEIGHT, Constants.SCREEN_HEIGHT + nHalfScreenHeight );
-					break;
-				
-				case 11: //lower right
-					posX = MathFunctions.RandomFromRange( Constants.SCREEN_WIDTH, Constants.SCREEN_WIDTH + nHalfScreenWidth );
-					posY = MathFunctions.RandomFromRange( Constants.SCREEN_HEIGHT, Constants.SCREEN_HEIGHT + nHalfScreenHeight );
-					break;
-				
-			}
-			
-			p_dancer.assetMC.x = posX;
-			p_dancer.assetMC.y = posY;
-		}
-		
-		
 		private function onShowCrowd( p_event:Event ):void
 		{
 			startFlashMob();
 		}
-		
-		
 		
 		public override function Update():void
 		{
@@ -350,6 +190,9 @@ package TestBed{
 			
 			updateMousePosition();
 			updatePlayer();
+			
+			_layerBackground.update();
+			_layerDancers.update();
 		}
 		
 		
@@ -386,34 +229,23 @@ package TestBed{
 		
 		private function startFlashMob():void
 		{
-			//_dancer.startMobbing();
-			
 			if( _crowdIdx >= 4 )
 				return;
 			
 			
-			var tmpArray:Array;
+			var nCount:uint = 12;
 			
 			switch( _crowdIdx )
 			{
-				case 0: tmpArray = _arrDancers1; break;
-				case 1: tmpArray = _arrDancers2; break;
-				case 2: tmpArray = _arrDancers3; break;
-				case 3: tmpArray = _arrDancers4; break;
+				case 0: nCount = 1; break;
+				case 1: nCount = 3; break;
+				case 2: nCount = 6; break;
+				case 3: nCount = 12; break;
 			}
+			
+			_layerDancers.spawnMobs( nCount );
 			
 			_crowdIdx++;
-			
-			var i:uint = 0;
-			var nMax:uint = tmpArray.length;
-			var tmpDancer:Dancer;
-			
-			for( i = 0; i < nMax; i++ )
-			{
-				tmpDancer = tmpArray[ i ];
-				_sprDancers.addChild( tmpDancer.assetMC );
-				tmpDancer.startMobbing( _crowdIdx - 1 );
-			}
 		}
 		
 		

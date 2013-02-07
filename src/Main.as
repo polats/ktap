@@ -38,97 +38,23 @@ import flash.text.*;
 	public class Main extends MovieClip{
 		public function Main() {
 			addEventListener(Event.ENTER_FRAME, update, false, 0, true);
+
+			m_sprite = new Sprite();
+			addChild(m_sprite);
 			
 			m_fpsCounter.x = 7;
 			m_fpsCounter.y = 5;
 			addChildAt(m_fpsCounter, 0);
 			
-			var beachBG:MovieClip = new Assets_BackgroundMC();
-			
-			m_sprite = new Sprite();
-			addChild( beachBG );
-			addChild(m_sprite);
 			// input
 			m_input = new Input(m_sprite);
 			
-			
-			//Instructions Text
-			var instructions_text:TextField = new TextField();
-			
-			var instructions_text_format:TextFormat = new TextFormat("Arial", 16, 0xffffff, false, false, false);
-			instructions_text_format.align = TextFormatAlign.RIGHT;
-			
-			instructions_text.defaultTextFormat = instructions_text_format
-			instructions_text.x = 140
-			instructions_text.y = 4.5
-			instructions_text.width = 495
-			instructions_text.height = 61
-			instructions_text.text = "Box2DFlashAS3 2.0.1\n'Left'/'Right' arrows to go to previous/next example. \n'R' to reset."
-//			addChild(instructions_text);
-			
-			// textfield pointer
-			m_aboutText = new TextField();
-			var m_aboutTextFormat:TextFormat = new TextFormat("Arial", 16, 0x00CCFF, true, false, false);
-			m_aboutTextFormat.align = TextFormatAlign.RIGHT;
-			m_aboutText.defaultTextFormat = m_aboutTextFormat
-			m_aboutText.x = 334
-			m_aboutText.y = 71
-			m_aboutText.width = 300
-			m_aboutText.height = 30
-//			addChild(m_aboutText);
-			
-			// Thanks to everyone who contacted me about this fix
-			instructions_text.mouseEnabled = false;
-			m_aboutText.mouseEnabled = false;
+			m_currTest = new TestRagdoll();
 		}
 		
 		public function update(e:Event):void{
 			// clear for rendering
 			m_sprite.graphics.clear()
-			
-			// toggle between tests
-			if (Input.isKeyPressed(39)){ // Right Arrow
-				m_currId++;
-				m_currTest = null;
-			}
-			else if (Input.isKeyPressed(37)){ // Left Arrow
-				m_currId--;
-				m_currTest = null
-			}
-			// Reset
-			else if (Input.isKeyPressed(82)){ // R
-				m_currTest = null
-			}
-			
-			var tests:Array = [
-				TestRagdoll,			// Ragdoll
-				TestCompound,			// Compound Shapes
-				TestCrankGearsPulley,	// Crank/Gears/Pulley
-				TestBridge,				// Bridge
-				TestStack,				// Stack
-				TestCCD,				// CCD
-				TestTheoJansen,			// Theo Jansen
-			//	TestEdges,				// Edges & Raycast
-				TestBuoyancy,			// Buoyancy
-				TestOneSidedPlatform,	// One Sided Platform
-				TestBreakable,			// Breakable
-				TestRaycast,			// Raycast
-			null
-			];
-			tests.length -= 1;
-			
-            var testCount:int = tests.length;
-			m_currId = (m_currId + testCount) % testCount;
-			
-			
-			
-			// if null, set new test
-			if (!m_currTest){
-				switch(m_currId) {
-					default:
-						m_currTest = new  tests[m_currId]();
-				}
-			}
 			
 			// update current test
 			m_currTest.Update();
@@ -139,7 +65,6 @@ import flash.text.*;
 			// update counter and limit framerate
 			m_fpsCounter.update();
 			FRateLimiter.limitFrame(30);
-			
 		}
 		
 		
@@ -150,7 +75,7 @@ import flash.text.*;
 		public var m_currId:int = 0;
 		static public var m_currTest:Test;
 		static public var m_sprite:Sprite;
-		static public var m_aboutText:TextField;
+//		static public var m_aboutText:TextField;
 		// input
 		public var m_input:Input;
 	}
