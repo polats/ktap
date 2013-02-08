@@ -1,8 +1,11 @@
 package KTAP.layers
 {
+	import KTAP.math.MathFunctions;
 	import KTAP.objects.Dancer;
 	
+	import flash.display.MovieClip;
 	import flash.display.Sprite;
+	import flash.geom.Point;
 
 	public class LayerDancers
 	{
@@ -29,11 +32,15 @@ package KTAP.layers
 			var i:uint = 0;
 			var nMax:uint = MAX_POOL_OBJECT_COUNT;
 			var tmpItem:Dancer;
+			var randType:uint;
 			
 			for( i = 0; i < nMax; i++ )
 			{
-				tmpItem = new Dancer();
+				randType = MathFunctions.RandomFromRange( 0, 1 );
+				
+				tmpItem = new Dancer( randType );
 				tmpItem.signalOnRecycle.add( onDancerRecycle );
+				tmpItem.signalOnAttach.add( onDancerAttach );
 				
 				_arrPoolDancers.push( tmpItem );
 				_assetSpr.addChild( tmpItem.assetMC );
@@ -72,6 +79,28 @@ package KTAP.layers
 			}
 		}
 		
+		public function hitTestPlayer( p_playerMC:MovieClip ):void
+		{
+			var i:int = 0;
+			var nMax:int = _arrActiveDancers.length;
+			var tmpDancer:Dancer;
+			
+			for( i = 0; i < nMax; i++ )
+			{
+				tmpDancer = _arrActiveDancers[ i ];
+				
+				if( tmpDancer == null )
+					continue;
+				
+				if( p_playerMC.hitTestObject( tmpDancer.assetMC ) )
+				{
+					trace( "Player Hit!" );
+					
+					tmpDancer.attachToPlayer( p_playerMC );
+				}
+			}
+		}
+		
 		private function onDancerRecycle( p_dancer:Dancer ):void
 		{
 			var tmpIdx:int = _arrActiveDancers.indexOf( p_dancer );
@@ -79,6 +108,13 @@ package KTAP.layers
 				_arrActiveDancers.splice( tmpIdx, 1 );
 			
 			_arrPoolDancers.push( p_dancer );
+		}
+		
+		private function onDancerAttach( p_dancer:Dancer ):void
+		{
+			var tmpIdx:int = _arrActiveDancers.indexOf( p_dancer );
+			if( tmpIdx >= 0 )
+				_arrActiveDancers.splice( tmpIdx, 1 );
 		}
 		
 		public function get assetSpr():Sprite

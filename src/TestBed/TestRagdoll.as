@@ -64,10 +64,6 @@ package TestBed{
 		//! Game Objects
 		private var _arrRagdolls:Array;
 		
-		private var _arrDancers1:Array;
-		private var _arrDancers2:Array;
-		private var _arrDancers3:Array;
-		private var _arrDancers4:Array;
 		private var _crowdIdx:uint = 0;
 		
 		private var _dancer:Dancer;
@@ -126,8 +122,13 @@ package TestBed{
 		{
 //			if( p_event.keyCode == 13 )
 			{
-				Main.m_sprite.stage.removeEventListener( KeyboardEvent.KEY_DOWN, onKeyPressed );
+//				Main.m_sprite.stage.removeEventListener( KeyboardEvent.KEY_DOWN, onKeyPressed );
 				animateStart();
+			}
+			
+			if( p_event.keyCode == 32 )
+			{
+				_layerDancers.spawnMobs();
 			}
 			
 			trace( p_event.keyCode );
@@ -224,6 +225,8 @@ package TestBed{
 			
 			//var playerRagdoll:Ragdoll = _arrRagdolls[0];
 			//playerRagdoll.head.SetPosition(new b2Vec2(Globals.heroPosPt.x / m_physScale,Globals.heroPosPt.y / m_physScale));
+		
+			_layerDancers.hitTestPlayer( _player.assetMC );
 		}
 		
 		
@@ -261,7 +264,6 @@ package TestBed{
 				tmpRagdoll.Update();
 			}
 		}
-		
 		
 		//======================
 		// Member Data 

@@ -10,6 +10,7 @@ package KTAP.objects
 	import com.greensock.easing.Strong;
 	
 	import flash.display.MovieClip;
+	import flash.geom.Point;
 	
 	import flashx.textLayout.operations.MoveChildrenOperation;
 	
@@ -17,9 +18,12 @@ package KTAP.objects
 
 	public class Dancer
 	{
+		private static const DANCING_SCALE:Number = 0.5;
+		
 		public static const STATE_HIDDEN:uint = 0;
 		public static const STATE_MOBBING:uint = 1;
 		public static const STATE_DANCING:uint = 2;
+		public static const STATE_ATTACHED:uint = 3;
 		
 		public static const TYPE_FEMALE:uint = 0;
 		public static const TYPE_MALE:uint = 1;
@@ -30,6 +34,7 @@ package KTAP.objects
 		private var _assetMC:MovieClip;
 
 		private var _signalOnRecycle:Signal;
+		private var _signalOnAttach:Signal;
 		
 		public function Dancer( p_type:uint = TYPE_FEMALE )
 		{
@@ -43,14 +48,15 @@ package KTAP.objects
 				_assetMC = new Asset_MaleDancerMC();
 			}
 			
-			_assetMC.scaleX = 0.5;
-			_assetMC.scaleY = 0.5;
+			_assetMC.scaleX = DANCING_SCALE;
+			_assetMC.scaleY = DANCING_SCALE;
 			
 			_assetMC.visible = false;
 			
 			_state = STATE_HIDDEN;
 			
 			_signalOnRecycle = new Signal();
+			_signalOnAttach = new Signal();
 		}
 		
 		public function startMobbing( p_proximity:uint = 0):void
@@ -167,8 +173,27 @@ package KTAP.objects
 			_signalOnRecycle.dispatch( this );
 		}
 		
+		public function attachToPlayer( p_playerMC:MovieClip ):void
+		{
+			_state = STATE_ATTACHED;
+			
+			_assetMC.scaleX = 1;
+			_assetMC.scaleY = 1;
+			
+			var localPt:Point = p_playerMC.parent.globalToLocal( new Point( _assetMC.x, _assetMC.y ) );
+			p_playerMC.addChild( _assetMC );
+			_assetMC.x = localPt.x - p_playerMC.x; //localPt.x;
+			_assetMC.y = localPt.y - p_playerMC.y; //localPt.y;
+			
+			_assetMC.stop();
+			_signalOnAttach.dispatch( this );
+		}
+		
 		public function update():void
 		{
+			if( _state != STATE_DANCING )
+				return;
+			
 			_assetMC.y += Constants.SPEED_VALUE;
 			
 			if( _assetMC.y > Constants.SCREEN_HEIGHT + 30 )
@@ -192,11 +217,25 @@ package KTAP.objects
 		{
 			return _state;
 		}
+		
+		public function set state( p_value:uint ):void
+		{
+			_state = p_value;
+		}
 
 		public function get signalOnRecycle():Signal
 		{
 			return _signalOnRecycle;
 		}
 
+		public function get signalOnAttach():Signal
+		{
+			return _signalOnAttach;
+		}
+
+		public function set signalOnAttach(value:Signal):void
+		{
+			_signalOnAttach = value;
+		}
 	}
 }

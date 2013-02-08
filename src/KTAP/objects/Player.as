@@ -12,7 +12,7 @@ package KTAP.objects
 			_assetMC.stop();
 			
 			_assetMC.scaleX = 0.5;
-			_assetMC.scaleY = 0.5
+			_assetMC.scaleY = 0.5;
 		}
 		
 		
