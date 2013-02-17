@@ -27,6 +27,8 @@ import Box2D.Dynamics.Joints.*;
 
 import General.*;
 
+import KTAP.Globals;
+
 import TestBed.*;
 
 import flash.display.*;
@@ -34,11 +36,13 @@ import flash.display.MovieClip;
 import flash.events.Event;
 import flash.text.*;
 
-	[SWF(width='1024', height='768', backgroundColor='#292C2C', frameRate='30')]
+	[SWF(width='634', height='475', backgroundColor='#292C2C', frameRate='30')]
 	public class Main extends MovieClip{
 		public function Main() {
 			addEventListener(Event.ENTER_FRAME, update, false, 0, true);
 
+			Globals.initialize();
+			
 			m_sprite = new Sprite();
 			addChild(m_sprite);
 			
@@ -50,6 +54,7 @@ import flash.text.*;
 			m_input = new Input(m_sprite);
 			
 			m_currTest = new TestRagdoll();
+			
 		}
 		
 		public function update(e:Event):void{
