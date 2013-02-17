@@ -32,6 +32,7 @@ package KTAP.objects
 		private var _state:uint = STATE_HIDDEN;
 		
 		private var _assetMC:MovieClip;
+		private var _hitAreaMC:MovieClip;
 
 		private var _signalOnRecycle:Signal;
 		private var _signalOnAttach:Signal;
@@ -47,6 +48,8 @@ package KTAP.objects
 			{
 				_assetMC = new Asset_MaleDancerMC();
 			}
+			
+			_hitAreaMC = _assetMC["mc_hitArea"];
 			
 			_assetMC.scaleX = DANCING_SCALE;
 			_assetMC.scaleY = DANCING_SCALE;
@@ -173,19 +176,21 @@ package KTAP.objects
 			_signalOnRecycle.dispatch( this );
 		}
 		
-		public function attachToPlayer( p_playerMC:MovieClip ):void
+		public function attachToPlayer( p_player:Player ):void
 		{
 			_state = STATE_ATTACHED;
+			
+			TweenMax.killTweensOf( _assetMC );
 			
 			_assetMC.scaleX = 1;
 			_assetMC.scaleY = 1;
 			
-			var localPt:Point = p_playerMC.parent.globalToLocal( new Point( _assetMC.x, _assetMC.y ) );
-			p_playerMC.addChild( _assetMC );
-			_assetMC.x = localPt.x - p_playerMC.x; //localPt.x;
-			_assetMC.y = localPt.y - p_playerMC.y; //localPt.y;
+			var localPt:Point = p_player.assetMC.parent.globalToLocal( new Point( _assetMC.x, _assetMC.y ) );
+			p_player.hitAreaMC.addChild( _assetMC );
+			_assetMC.x = localPt.x - p_player.assetMC.x; //localPt.x;
+			_assetMC.y = localPt.y - p_player.assetMC.y; //localPt.y;
 			
-			_assetMC.stop();
+//			_assetMC.stop();
 			_signalOnAttach.dispatch( this );
 		}
 		
@@ -237,5 +242,11 @@ package KTAP.objects
 		{
 			_signalOnAttach = value;
 		}
+
+		public function get hitAreaMC():MovieClip
+		{
+			return _hitAreaMC;
+		}
+
 	}
 }

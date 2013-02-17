@@ -2,6 +2,7 @@ package KTAP.layers
 {
 	import KTAP.math.MathFunctions;
 	import KTAP.objects.Dancer;
+	import KTAP.objects.Player;
 	
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
@@ -79,7 +80,7 @@ package KTAP.layers
 			}
 		}
 		
-		public function hitTestPlayer( p_playerMC:MovieClip ):void
+		public function hitTestPlayer( p_player:Player ):void
 		{
 			var i:int = 0;
 			var nMax:int = _arrActiveDancers.length;
@@ -92,11 +93,11 @@ package KTAP.layers
 				if( tmpDancer == null )
 					continue;
 				
-				if( p_playerMC.hitTestObject( tmpDancer.assetMC ) )
+				if( p_player.hitAreaMC.hitTestObject( tmpDancer.hitAreaMC) )
 				{
 					trace( "Player Hit!" );
 					
-					tmpDancer.attachToPlayer( p_playerMC );
+					tmpDancer.attachToPlayer( p_player );
 				}
 			}
 		}

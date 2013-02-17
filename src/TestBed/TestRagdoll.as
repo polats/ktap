@@ -59,7 +59,9 @@ package TestBed{
 		private var _mousePt:Point;
 		private var _playerMoveEase:Number = 0.1;
 		
+		//! Flags
 		private var _bFollowMouse:Boolean = false;
+		private var _bGameHasStarted:Boolean = false;
 		
 		//! Game Objects
 		private var _arrRagdolls:Array;
@@ -120,10 +122,11 @@ package TestBed{
 		
 		private function onKeyPressed( p_event:KeyboardEvent ):void
 		{
-//			if( p_event.keyCode == 13 )
+			if( _bGameHasStarted == false )
 			{
-//				Main.m_sprite.stage.removeEventListener( KeyboardEvent.KEY_DOWN, onKeyPressed );
 				animateStart();
+				_bGameHasStarted = true;
+				return;
 			}
 			
 			if( p_event.keyCode == 32 )
@@ -226,7 +229,7 @@ package TestBed{
 			//var playerRagdoll:Ragdoll = _arrRagdolls[0];
 			//playerRagdoll.head.SetPosition(new b2Vec2(Globals.heroPosPt.x / m_physScale,Globals.heroPosPt.y / m_physScale));
 		
-			_layerDancers.hitTestPlayer( _player.assetMC );
+			_layerDancers.hitTestPlayer( _player );
 		}
 		
 		
