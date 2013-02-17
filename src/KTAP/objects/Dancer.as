@@ -7,6 +7,8 @@ package KTAP.objects
 	import com.greensock.TweenMax;
 	import com.greensock.easing.Cubic;
 	import com.greensock.easing.Expo;
+	import com.greensock.easing.Linear;
+	import com.greensock.easing.Quad;
 	import com.greensock.easing.Strong;
 	
 	import flash.display.MovieClip;
@@ -18,7 +20,7 @@ package KTAP.objects
 
 	public class Dancer
 	{
-		private static const DANCING_SCALE:Number = 0.5;
+		private static const DANCING_SCALE:Number = 0.3;
 		
 		public static const STATE_HIDDEN:uint = 0;
 		public static const STATE_MOBBING:uint = 1;
@@ -62,19 +64,32 @@ package KTAP.objects
 			_signalOnAttach = new Signal();
 		}
 		
+		public function reset():void
+		{
+			_state = STATE_HIDDEN;
+			
+			_assetMC.scaleX = DANCING_SCALE;
+			_assetMC.scaleY = DANCING_SCALE;
+			_assetMC.visible = false;
+			_assetMC.gotoAndStop( 1 );
+			_assetMC.x = 0;
+			_assetMC.y = 0;
+		}
+		
 		public function startMobbing( p_proximity:uint = 0):void
 		{
 			_assetMC.visible = true;
 			
-			var nTargetPosX:Number = _assetMC.x + ( Globals.heroPosPt.x - _assetMC.x ) * 0.7;
-			var nTargetPosY:Number = _assetMC.y + ( Globals.heroPosPt.y - _assetMC.y ) * 0.7;
+			var nTargetPosX:Number = _assetMC.x + ( Globals.mousePosPt.x - _assetMC.x ) * 0.7;
+			var nTargetPosY:Number = _assetMC.y + ( Globals.mousePosPt.y - _assetMC.y ) * 0.7;
 			
 			nTargetPosX = Math.max( nTargetPosX, 50 );
 			nTargetPosY = Math.max( nTargetPosY, 50 );
 			
 			_assetMC.visible = true;
 			_state = STATE_MOBBING;
-			TweenMax.to( _assetMC, 2, { x:nTargetPosX, y:nTargetPosY, ease:Cubic.easeOut, onComplete:onMobMoveComplete } );
+			//Cubic.easeOut
+			TweenMax.to( _assetMC, 1, { x:nTargetPosX, y:nTargetPosY, ease:Cubic.easeOut, onComplete:onMobMoveComplete } );
 		}
 		
 		public function randomizeDancerPosition( p_corderIdx:int = -1 ):void
@@ -186,9 +201,17 @@ package KTAP.objects
 			_assetMC.scaleY = 1;
 			
 			var localPt:Point = p_player.assetMC.parent.globalToLocal( new Point( _assetMC.x, _assetMC.y ) );
-			p_player.hitAreaMC.addChild( _assetMC );
 			_assetMC.x = localPt.x - p_player.assetMC.x; //localPt.x;
 			_assetMC.y = localPt.y - p_player.assetMC.y; //localPt.y;
+			
+			
+			if( _assetMC.y <= 90 )
+				p_player.hitAreaBackMC.addChild( _assetMC );
+			else
+				p_player.hitAreaFrontMC.addChild( _assetMC );
+			
+			_assetMC.x += 30;
+			_assetMC.y += 46;
 			
 //			_assetMC.stop();
 			_signalOnAttach.dispatch( this );
@@ -199,14 +222,13 @@ package KTAP.objects
 			if( _state != STATE_DANCING )
 				return;
 			
-			_assetMC.y += Constants.SPEED_VALUE;
+			_assetMC.y += Globals.scrollSpeed;
 			
 			if( _assetMC.y > Constants.SCREEN_HEIGHT + 30 )
 			{
 				recycleMe();
 			}
 		}
-		
 		
 		private function onMobMoveComplete():void
 		{

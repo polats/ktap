@@ -1,6 +1,8 @@
 package KTAP.layers
 {
 	import KTAP.Constants;
+	import KTAP.Globals;
+	import KTAP.objects.Player;
 	
 	import flash.display.MovieClip;
 
@@ -19,7 +21,7 @@ package KTAP.layers
 		
 		public function update():void
 		{
-			_bgMC.y += Constants.SPEED_VALUE;
+			_bgMC.y += Globals.scrollSpeed;
 			
 			if( _bgMC.y >= 0 )
 			{
