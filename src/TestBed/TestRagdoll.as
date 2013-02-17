@@ -33,6 +33,7 @@ package TestBed{
 	import KTAP.Globals;
 	import KTAP.layers.LayerBackground;
 	import KTAP.layers.LayerDancers;
+	import KTAP.layers.LayerGameOver;
 	import KTAP.math.MathFunctions;
 	import KTAP.objects.Dancer;
 	import KTAP.objects.Player;
@@ -47,13 +48,28 @@ package TestBed{
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.geom.Point;
+	import flash.media.SoundMixer;
+	import flash.media.SoundTransform;
+	
+	import flashx.textLayout.elements.BreakElement;
+	
+	import ph.savepoint.tantalus.CTimeManager;
+	import ph.savepoint.tantalus.CTimer;
 	
 	
 	
 	public class TestRagdoll extends Test{
 		
-		private var EVENT_SHOW_CROWD:String = "BGM_SHOW_CROWD";
+		private static const STATE_GAME_START:uint = 0;
+		private static const STATE_GAME_PLAYING:uint = 1;
+		private static const STATE_GAME_END:uint = 2;
 		
+		private var EVENT_SHOW_CROWD:String = "BGM_SHOW_CROWD";
+		private var EVENT_SHOW_CROWD_1:String = "BGM_SHOW_CROWD_1";
+		private var EVENT_SHOW_CROWD_3:String = "BGM_SHOW_CROWD_3";
+		private var EVENT_SHOW_CROWD_SMALL:String = "BGM_SHOW_CROWD_SMALL";
+		private var EVENT_SHOW_CROWD_MED:String = "BGM_SHOW_CROWD_MED";
+		private var EVENT_STANZA_END:String = "BGM_STANZA_END";
 		
 		//! Stored Mouse Position
 		private var _mousePt:Point;
@@ -65,9 +81,7 @@ package TestBed{
 		
 		//! Game Objects
 		private var _arrRagdolls:Array;
-		
 		private var _crowdIdx:uint = 0;
-		
 		private var _dancer:Dancer;
 		private var _player:Player;
 		private var _mcMusic:MovieClip;
@@ -76,47 +90,61 @@ package TestBed{
 		//! Layers
 		private var _layerBackground:LayerBackground;
 		private var _layerDancers:LayerDancers;
+		private var _layerGameOver:LayerGameOver;
+		
 		
 		//! Containers Only
 		private var _sprRagdolls:Sprite;
 		private var _sprPlayer:Sprite;
 		
+		private var _state:uint;
+		
 		public function TestRagdoll(){
-			
-			// Set Text field
-//			Main.m_aboutText.text = "Ragdolls";
 			
 			_mousePt = new Point();
 			
 			//createRagdolls(1, Constants.SCREEN_WIDTH * 0.5, Constants.SCREEN_HEIGHT * 0.5 - 40);
 			createPlayer();
-//			createDancers();
-			
-			_mcMusic = new Assets_MusicMC();
 			
 			//! create layers
 			_layerBackground = new LayerBackground();
 			this.m_sprite.addChild( _layerBackground.assetMC );
 			
+			//! Game Over
+			_layerGameOver = new LayerGameOver();
+			_layerGameOver.signalTryAgainClicked.add( onTryAgain );
+			
 //			this.m_sprite.addChild( _sprRagdolls );
 			
+			//! Dancers
 			_layerDancers = new LayerDancers();
+			_layerDancers.signalPlayerHit.add( onPlayerHit );
 			this.m_sprite.addChild( _layerDancers.assetSpr );
 			this.m_sprite.addChild( _sprPlayer );
-			this.m_sprite.addChild( _mcMusic );
-			_mcMusic.visible = false;
-			_mcMusic.gotoAndStop( 1 );
 
-			
+			//! Title
 			_titleMC = new Assets_TitleMC();
 			this.m_sprite.addChild( _titleMC );
 			_titleMC.x = Constants.SCREEN_WIDTH * 0.5;
 			_titleMC.y = Constants.SCREEN_HEIGHT * 0.5 + 100;
 			
-			Globals.heroPosPt.x = Constants.SCREEN_WIDTH * 0.5;
-			Globals.heroPosPt.y = Constants.SCREEN_HEIGHT * 0.5 - 100;
+			Globals.mousePosPt.x = Constants.SCREEN_WIDTH * 0.5;
+			Globals.mousePosPt.y = Constants.SCREEN_HEIGHT * 0.5 - 100;
+			
+			//! Music
+			_mcMusic = new Assets_MusicMC();
+			_mcMusic.addEventListener( EVENT_SHOW_CROWD, onShowCrowd );
+			_mcMusic.addEventListener( EVENT_SHOW_CROWD_1, onShowCrowd1 );
+			_mcMusic.addEventListener( EVENT_SHOW_CROWD_3, onShowCrowd3 );
+			_mcMusic.addEventListener( EVENT_SHOW_CROWD_SMALL, onShowCrowdSmall );
+			_mcMusic.addEventListener( EVENT_SHOW_CROWD_MED, onShowCrowdMed );
+			_mcMusic.addEventListener( EVENT_STANZA_END, onStanzaEnd );
+			this.m_sprite.addChild( _mcMusic );
+			_mcMusic.visible = false;
+			_mcMusic.gotoAndStop( 1 );
 			
 			Main.m_sprite.stage.addEventListener( KeyboardEvent.KEY_DOWN, onKeyPressed );
+			_state = STATE_GAME_START;
 		}		
 		
 		
@@ -126,21 +154,23 @@ package TestBed{
 			{
 				animateStart();
 				_bGameHasStarted = true;
+				_bFollowMouse = true;
+				_state = STATE_GAME_PLAYING;
 				return;
 			}
 			
-			if( p_event.keyCode == 32 )
-			{
-				_layerDancers.spawnMobs();
-			}
-			
-			trace( p_event.keyCode );
+//			if( p_event.keyCode == 32 )
+//			{
+//				_layerDancers.spawnMobs();
+//			}
+//			
+//			trace( p_event.keyCode );
 		}
 		
 		
 		private function animateStart():void
 		{
-			var tlEnterAnim:TimelineMax = new TimelineMax( { onComplete:addListeners } );
+			var tlEnterAnim:TimelineMax = new TimelineMax( { onComplete:onEnterAnimComplete } );
 			
 			tlEnterAnim.append( TweenMax.to( _titleMC, 1, { scaleX:0.8, scaleY:0.8, ease:Strong.easeIn } ) );
 			tlEnterAnim.append( TweenMax.to( _titleMC, 3, {  alpha:0, scaleX:3.0, scaleY:3.0, ease:Strong.easeOut } ) );
@@ -162,7 +192,6 @@ package TestBed{
 			}
 		}
 		
-		
 		private function createPlayer():void
 		{
 			_sprPlayer = new Sprite();
@@ -172,25 +201,131 @@ package TestBed{
 			
 			_player.assetMC.x = Constants.SCREEN_WIDTH * 0.5;
 			_player.assetMC.y = Constants.SCREEN_HEIGHT * 0.5;
+			
+			_player.signalNoMoreSpeed.add( onPlayerNoMoreSpeed );
 		}
 		
-		private function addListeners():void
+		private function onEnterAnimComplete():void
 		{
-			_mcMusic.addEventListener( EVENT_SHOW_CROWD, onShowCrowd );
 			_mcMusic.gotoAndPlay( 1 );
+			_layerDancers.startDancing();
 			
-			_bFollowMouse = true;
+			//! mute the sound first
+//			var muteTransform:SoundTransform = new SoundTransform();
+//			muteTransform.volume = 0;
+//			_mcMusic.soundTransform = muteTransform;
 		}
 		
 		private function onShowCrowd( p_event:Event ):void
 		{
+			if( _state != STATE_GAME_PLAYING )
+				return;
+			
+			trace( "show crowd!" );	
 			startFlashMob();
+		}
+		
+		private function onShowCrowd1( p_event:Event ):void
+		{
+			if( _state != STATE_GAME_PLAYING )
+				return;
+			
+			trace( "show crowd 1!" );
+			_layerDancers.spawnMobOnRandomPosition( 1 );
+		}
+		
+		private function onShowCrowd3( p_event:Event ):void
+		{
+			if( _state != STATE_GAME_PLAYING )
+				return;
+			
+			trace( "show crowd 3!" );
+			_layerDancers.spawnMobOnRandomPosition( 3 );
+		}
+		
+		private function onShowCrowdSmall( p_event:Event ):void
+		{
+			if( _state != STATE_GAME_PLAYING )
+				return;
+			
+			trace( "show crowd SMALL!" );
+			var randDancers:uint = MathFunctions.RandomFromRange( 2, 5 );
+			_layerDancers.spawnMobOnRandomPosition( randDancers );
+		}
+		
+		private function onShowCrowdMed( p_event:Event ):void
+		{
+			if( _state != STATE_GAME_PLAYING )
+				return;
+			
+			trace( "show crowd MED!" );
+			var randDancers:uint = MathFunctions.RandomFromRange( 6, 10 );
+			_layerDancers.spawnMobOnRandomPosition( randDancers );
+		}
+		
+		private function onStanzaEnd( p_event:Event ):void
+		{
+			_mcMusic.gotoAndPlay( 753 );	
+		}
+		
+		private function onPlayerNoMoreSpeed():void
+		{
+			_state = STATE_GAME_END;
+			//! show game over screen
+			
+			this.m_sprite.stage.addChild( _layerGameOver.assetMC );
+			_layerGameOver.playEnterAnimation();
+			
+			trace( "GAME DURATION: " + Globals.gameTimer.convertTimeElapsedToClockFormat() );
+		}
+		
+		private function onPlayerHit():void
+		{
+//			Globals.updateScrollSpeed( _player );
+		}
+		
+		private function onTryAgain():void
+		{
+			if( this.m_sprite.stage.contains( _layerGameOver.assetMC ) )
+				this.m_sprite.stage.removeChild( _layerGameOver.assetMC );
+			
+			_mcMusic.stop();
+			
+			//! remove all dancers
+			_layerDancers.resetDancers();
+			
+			Globals.initialize();
+			
+			//! place donna in the center;
+			Globals.mousePosPt.x = Constants.SCREEN_WIDTH * 0.5;
+			Globals.mousePosPt.y = Constants.SCREEN_HEIGHT * 0.5 - 100;
+			
+			//! remove listener for update
+			_bGameHasStarted = false;
+			_bFollowMouse = false;
+			_state = STATE_GAME_START;
+			
+			_player.resetEaseSpeed();
+			
+			this.m_sprite.addChild( _titleMC );
+			_titleMC.x = Constants.SCREEN_WIDTH * 0.5;
+			_titleMC.y = Constants.SCREEN_HEIGHT * 0.5 + 100;
+			_titleMC.scaleX = 1;
+			_titleMC.scaleY = 1;
+			_titleMC.alpha = 1;
 		}
 		
 		public override function Update():void
 		{
 			super.Update();
 //			updateRagdolls();
+			
+			//! update Timer
+			CTimeManager.updateTime();
+			if( _state == STATE_GAME_PLAYING )
+			{
+				Globals.gameTimer.updateTimer();
+			}
 			
 			updateMousePosition();
 			updatePlayer();
@@ -199,13 +334,13 @@ package TestBed{
 			_layerDancers.update();
 		}
 		
-		
 		private function updateMousePosition():void
 		{
 			if( _bFollowMouse == false )
 				return;
 			
-			Globals.updateHeroPosPt( this.m_sprite.stage.mouseX, this.m_sprite.stage.mouseY );
+			Globals.updateMousePosPt( this.m_sprite.stage.mouseX, this.m_sprite.stage.mouseY );
+			Globals.updateHeroPosPt( _player.assetMC.x, _player.assetMC.y );
 /*
 			var md:b2MouseJointDef = new b2MouseJointDef();
 			md.bodyA = m_world.GetGroundBody();
@@ -218,25 +353,23 @@ package TestBed{
 */			
 		}
 		
-		
 		private function updatePlayer():void
 		{
 			//! ( target - current ) * ease
 			
-			_player.assetMC.x += ( Globals.heroPosPt.x - _player.assetMC.x ) * _playerMoveEase;
-			_player.assetMC.y += ( Globals.heroPosPt.y - _player.assetMC.y ) * _playerMoveEase;
+			_player.update();
 			
 			//var playerRagdoll:Ragdoll = _arrRagdolls[0];
 			//playerRagdoll.head.SetPosition(new b2Vec2(Globals.heroPosPt.x / m_physScale,Globals.heroPosPt.y / m_physScale));
 		
-			_layerDancers.hitTestPlayer( _player );
+			if( _state == STATE_GAME_PLAYING )
+				_layerDancers.hitTestPlayer( _player );
 		}
-		
 		
 		private function startFlashMob():void
 		{
-			if( _crowdIdx >= 4 )
-				return;
+//			if( _crowdIdx >= 4 )
+//				return;
 			
 			
 			var nCount:uint = 12;
@@ -247,13 +380,13 @@ package TestBed{
 				case 1: nCount = 3; break;
 				case 2: nCount = 6; break;
 				case 3: nCount = 12; break;
+				default: nCount = 12; break;
 			}
 			
 			_layerDancers.spawnMobs( nCount );
 			
 			_crowdIdx++;
 		}
-		
 		
 		private function updateRagdolls():void
 		{
@@ -267,10 +400,5 @@ package TestBed{
 				tmpRagdoll.Update();
 			}
 		}
-		
-		//======================
-		// Member Data 
-		//======================
 	}
-	
 }
