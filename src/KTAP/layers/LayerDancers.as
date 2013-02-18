@@ -1,5 +1,6 @@
 package KTAP.layers
 {
+	import KTAP.Constants;
 	import KTAP.math.MathFunctions;
 	import KTAP.objects.Dancer;
 	import KTAP.objects.Player;
@@ -9,6 +10,9 @@ package KTAP.layers
 	import flash.geom.Point;
 	
 	import org.osflash.signals.Signal;
+	
+	import ph.savepoint.tantalus.CMathFunctions;
+	import ph.savepoint.tantalus.CTimer;
 
 	public class LayerDancers
 	{
@@ -17,6 +21,8 @@ package KTAP.layers
 		//! create pool of dancers
 		private var _arrPoolDancers:Array;
 		private var _arrActiveDancers:Array;
+		
+		private var _singleDancerSpawnTimer:CTimer;
 		
 		private var _assetSpr:Sprite;
 		
@@ -32,6 +38,8 @@ package KTAP.layers
 			_officialFemaleDancerMC = new Asset_FemaleDancerMC();
 			_officialFemaleDancerMC.gotoAndStop( 1 );
 			
+			_singleDancerSpawnTimer = new CTimer( 100 );
+			_singleDancerSpawnTimer.maxTimeMs = CMathFunctions.RandomFromRange( Constants.MIN_TIME_SINGLE_DANCER_SPAWN_MS, Constants.MAX_TIME_SINGLE_DANCER_SPAWN_MS );
 			createPoolDancers();
 		}
 		
@@ -167,8 +175,8 @@ package KTAP.layers
 					continue;
 				}
 				
-				randIdx = MathFunctions.RandomFromRange( 2, 3 ) -1;
-				tmpItem.randomizeDancerPosition( randIdx % 12 );
+//				randIdx = MathFunctions.RandomFromRange( 2, 3 ) -1;
+				tmpItem.randomizeStandingDancerPosition();
 				
 				_arrActiveDancers.push( tmpItem );
 				tmpItem.startDancing();
@@ -182,6 +190,21 @@ package KTAP.layers
 			{
 				if( tmpDancer.state == Dancer.STATE_DANCING )
 					tmpDancer.update();
+			}
+		}
+		
+		public function updateSingleDancerSpawnTimer():void
+		{
+			_singleDancerSpawnTimer.updateTimer();
+			if( _singleDancerSpawnTimer.bHasElapsed )
+			{
+				var nRandCount:Number = CMathFunctions.RandomFromRange( 1, 3 );
+				
+				spawnStandingDancer( nRandCount );
+				
+				//! we randomize the max time to wait for the next spawn
+				_singleDancerSpawnTimer.maxTimeMs = CMathFunctions.RandomFromRange( Constants.MIN_TIME_SINGLE_DANCER_SPAWN_MS, Constants.MAX_TIME_SINGLE_DANCER_SPAWN_MS );
+				_singleDancerSpawnTimer.resetTimer();
 			}
 		}
 		

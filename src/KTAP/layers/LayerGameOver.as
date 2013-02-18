@@ -19,6 +19,7 @@ package KTAP.layers
 		private var _gameOverMC:MovieClip;
 		
 		private var _tlEnterAnim:TimelineMax;
+		private var _tlTryAgainAnim:TimelineMax;
 		
 		private var _signalTryAgainClicked:Signal;
 		
@@ -49,6 +50,15 @@ package KTAP.layers
 			_tlEnterAnim.stop();
 			
 //			_tlEnterAnim.timeScale = 0.5;
+			
+			_tlTryAgainAnim = new TimelineMax( { onComplete:onTryAgainAnimComplete } );
+			
+			_tlTryAgainAnim.append( TweenMax.to( _filterMC, 1, { alpha:1, ease:Strong.easeIn } ) );
+			_tlTryAgainAnim.append( TweenMax.to( _gameOverMC, 0.3, { alpha:0, ease:Strong.easeOut } ), -0.5 );
+			_tlTryAgainAnim.append( TweenMax.to( _btnTryAgain, 0.3, { alpha:0, ease:Strong.easeOut } ), -0.3 );
+			_tlTryAgainAnim.stop();
+			
+			_tlTryAgainAnim.timeScale = 0.8;
 		}
 		
 		public function playEnterAnimation():void
@@ -63,9 +73,17 @@ package KTAP.layers
 		{
 			_assetMC.mouseChildren = true;
 			_assetMC.mouseEnabled = true;
+			
+			_btnTryAgain.mouseEnabled = true;
 		}
 		
 		private function onBtnClick( p_event:MouseEvent ):void
+		{
+			_btnTryAgain.mouseEnabled = false;
+			_tlTryAgainAnim.restart();
+		}
+		
+		private function onTryAgainAnimComplete():void
 		{
 			_signalTryAgainClicked.dispatch();
 		}

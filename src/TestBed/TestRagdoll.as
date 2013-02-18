@@ -133,6 +133,7 @@ package TestBed{
 			_layerTitle = new LayerTitle();
 			_layerTitle.signalOnEnterAnimComplete.add( onEnterAnimComplete );
 			_layerTitle.signalOnStartClick.add( onKeyPressed );
+			_layerTitle.signalOnResetAnimComplete.add( onResetAnimComplete );
 //			_titleMC = new Assets_TitleMC();
 			this.m_sprite.addChild( _layerTitle.assetMC );
 //			_titleMC.x = Constants.SCREEN_WIDTH * 0.5;
@@ -307,12 +308,16 @@ package TestBed{
 			//! remove listener for update
 			_bGameHasStarted = false;
 			_bFollowMouse = false;
-			_state = STATE_GAME_START;
 			
 			_player.resetEaseSpeed();
 			
 			this.m_sprite.addChild( _layerTitle.assetMC );
 			_layerTitle.resetLayer();
+		}
+		
+		private function onResetAnimComplete():void
+		{
+			_state = STATE_GAME_START;
 		}
 		
 		public override function Update():void
@@ -325,6 +330,7 @@ package TestBed{
 			if( _state == STATE_GAME_PLAYING )
 			{
 				Globals.gameTimer.updateTimer();
+				_layerDancers.updateSingleDancerSpawnTimer();
 			}
 			
 			updateMousePosition();

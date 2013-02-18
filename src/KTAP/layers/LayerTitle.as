@@ -19,11 +19,15 @@ package KTAP.layers
 		private var _titleMC:MovieClip;
 		private var _startMC:MovieClip;
 		
+		private var _startButtonOrigPosY:Number;
+		
 		private var _tlEnterAnim:TimelineMax;
 		private var _tlFadeOutFilter:TimelineMax;
+		private var _tlResetAnim:TimelineMax;
 		
 		private var _signalOnEnterAnimComplete:Signal;
 		private var _signalOnStartClick:Signal;
+		private var _signalOnResetAnimComplete:Signal;
 		
 		public function LayerTitle()
 		{
@@ -37,6 +41,10 @@ package KTAP.layers
 			
 			_signalOnEnterAnimComplete = new Signal();
 			_signalOnStartClick = new Signal();
+			_signalOnResetAnimComplete = new Signal();
+			
+			_startButtonOrigPosY = _startMC.y;
+			
 			createAnimations();
 		}
 		
@@ -54,6 +62,12 @@ package KTAP.layers
 			_tlFadeOutFilter.append( TweenMax.fromTo( _filterMC, 2, { autoAlpha:1 }, { autoAlpha:0, ease:Strong.easeOut } ) );
 			_tlFadeOutFilter.append( TweenMax.from( _startMC, 1, { y:Constants.SCREEN_HEIGHT + 100, ease:Strong.easeOut } ), -2 );
 			_tlFadeOutFilter.stop();
+			
+			_tlResetAnim = new TimelineMax( { onComplete:onResetAnimComplete } );
+			_tlResetAnim.append( TweenMax.fromTo( _titleMC, 1, { autoAlpha:0 }, { autoAlpha:1, ease:Strong.easeOut } ) );
+			_tlResetAnim.append( TweenMax.fromTo( _filterMC, 2, { autoAlpha:1 }, { autoAlpha:0, ease:Strong.easeOut } ), -1 );
+			_tlResetAnim.append( TweenMax.fromTo( _startMC, 1, { y:Constants.SCREEN_HEIGHT + 100 }, { y:_startButtonOrigPosY, ease:Strong.easeOut } ), -2 );
+			_tlResetAnim.stop();
 		}
 		
 		public function fadeOutFilter():void
@@ -72,11 +86,13 @@ package KTAP.layers
 		
 		public function resetLayer():void
 		{
-			_filterMC.alpha = 0;
+//			_filterMC.alpha = 1;
 			_titleMC.scaleX = 1;
 			_titleMC.scaleY = 1;
-			_titleMC.alpha = 1;
+//			_titleMC.alpha = 1;
 			_startMC.alpha = 1;
+			
+			_tlResetAnim.restart();
 		}
 		
 		private function onEnterAnimComplete():void
@@ -88,6 +104,13 @@ package KTAP.layers
 		{
 			_startMC.mouseChildren = true;
 			_startMC.mouseEnabled = true;
+		}
+		
+		private function onResetAnimComplete():void
+		{
+			_startMC.mouseChildren = true;
+			_startMC.mouseEnabled = true;
+			_signalOnResetAnimComplete.dispatch();
 		}
 		
 		private function onBtnClick( p_event:MouseEvent ):void
@@ -108,6 +131,11 @@ package KTAP.layers
 		public function get signalOnStartClick():Signal
 		{
 			return _signalOnStartClick;
+		}
+
+		public function get signalOnResetAnimComplete():Signal
+		{
+			return _signalOnResetAnimComplete;
 		}
 
 

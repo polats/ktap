@@ -189,6 +189,31 @@ package KTAP.objects
 			assetMC.y = posY;
 		}
 		
+		public function randomizeStandingDancerPosition():void
+		{
+			
+			//    |    1   |    
+			//    +--------+
+			//    |        |   
+			//    |        |
+			//    |        |   
+			//    +--------+   
+			//    |   |    |  
+			
+			
+			var posX:Number;
+			var posY:Number;
+			
+			var nHalfScreenWidth:Number = Constants.SCREEN_WIDTH * 0.5;
+			var nHalfScreenHeight:Number = Constants.SCREEN_HEIGHT * 0.5;
+			
+			posX = MathFunctions.RandomFromRange( 50, Constants.SCREEN_WIDTH - 50 );
+			posY = MathFunctions.RandomFromRange( nHalfScreenHeight * -1, 50 );
+			
+			assetMC.x = posX;
+			assetMC.y = posY;
+		}
+		
 		private function recycleMe():void
 		{
 			_state = STATE_HIDDEN;
