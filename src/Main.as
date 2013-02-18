@@ -36,13 +36,19 @@ import flash.display.MovieClip;
 import flash.events.Event;
 import flash.text.*;
 
+	[Frame( factoryClass = "GamePreloader" )]
 	[SWF(width='634', height='475', backgroundColor='#292C2C', frameRate='30')]
 	public class Main extends MovieClip{
 		public function Main() {
-			addEventListener(Event.ENTER_FRAME, update, false, 0, true);
-
+			addEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
+		}
+		
+		private function onAddedToStage( p_event:Event ):void
+		{
+			removeEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
+			addEventListener( Event.ENTER_FRAME, update, false, 0, true );
+		
 			Globals.initialize();
-			
 			m_sprite = new Sprite();
 			addChild(m_sprite);
 			
@@ -54,7 +60,6 @@ import flash.text.*;
 			m_input = new Input(m_sprite);
 			
 			m_currTest = new TestRagdoll();
-			
 		}
 		
 		public function update(e:Event):void{

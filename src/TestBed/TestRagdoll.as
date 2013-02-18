@@ -34,6 +34,8 @@ package TestBed{
 	import KTAP.layers.LayerBackground;
 	import KTAP.layers.LayerDancers;
 	import KTAP.layers.LayerGameOver;
+	import KTAP.layers.LayerMovie;
+	import KTAP.layers.LayerTitle;
 	import KTAP.math.MathFunctions;
 	import KTAP.objects.Dancer;
 	import KTAP.objects.Player;
@@ -85,13 +87,14 @@ package TestBed{
 		private var _dancer:Dancer;
 		private var _player:Player;
 		private var _mcMusic:MovieClip;
-		private var _titleMC:MovieClip;
+//		private var _titleMC:MovieClip;
 		
 		//! Layers
 		private var _layerBackground:LayerBackground;
 		private var _layerDancers:LayerDancers;
 		private var _layerGameOver:LayerGameOver;
-		
+		private var _layerMovie:LayerMovie;
+		private var _layerTitle:LayerTitle;
 		
 		//! Containers Only
 		private var _sprRagdolls:Sprite;
@@ -114,6 +117,10 @@ package TestBed{
 			_layerGameOver = new LayerGameOver();
 			_layerGameOver.signalTryAgainClicked.add( onTryAgain );
 			
+			//! Movie
+			_layerMovie = new LayerMovie();
+			_layerMovie.signalOnVideoPlayComplete.add( onIntroVideoComplete );
+			
 //			this.m_sprite.addChild( _sprRagdolls );
 			
 			//! Dancers
@@ -123,10 +130,13 @@ package TestBed{
 			this.m_sprite.addChild( _sprPlayer );
 
 			//! Title
-			_titleMC = new Assets_TitleMC();
-			this.m_sprite.addChild( _titleMC );
-			_titleMC.x = Constants.SCREEN_WIDTH * 0.5;
-			_titleMC.y = Constants.SCREEN_HEIGHT * 0.5 + 100;
+			_layerTitle = new LayerTitle();
+			_layerTitle.signalOnEnterAnimComplete.add( onEnterAnimComplete );
+			_layerTitle.signalOnStartClick.add( onKeyPressed );
+//			_titleMC = new Assets_TitleMC();
+			this.m_sprite.addChild( _layerTitle.assetMC );
+//			_titleMC.x = Constants.SCREEN_WIDTH * 0.5;
+//			_titleMC.y = Constants.SCREEN_HEIGHT * 0.5 + 100;
 			
 			Globals.mousePosPt.x = Constants.SCREEN_WIDTH * 0.5;
 			Globals.mousePosPt.y = Constants.SCREEN_HEIGHT * 0.5 - 100;
@@ -145,36 +155,20 @@ package TestBed{
 			
 			Main.m_sprite.stage.addEventListener( KeyboardEvent.KEY_DOWN, onKeyPressed );
 			_state = STATE_GAME_START;
+			
+			TweenMax.delayedCall( 1, _layerTitle.fadeOutFilter );
 		}		
 		
 		
-		private function onKeyPressed( p_event:KeyboardEvent ):void
+		private function onKeyPressed( p_event:KeyboardEvent = null ):void
 		{
 			if( _bGameHasStarted == false )
 			{
-				animateStart();
+//				animateStart();
 				_bGameHasStarted = true;
-				_bFollowMouse = true;
-				_state = STATE_GAME_PLAYING;
+				_layerTitle.playEnterAnimation();
 				return;
 			}
-			
-//			if( p_event.keyCode == 32 )
-//			{
-//				_layerDancers.spawnMobs();
-//			}
-//			
-//			trace( p_event.keyCode );
-		}
-		
-		
-		private function animateStart():void
-		{
-			var tlEnterAnim:TimelineMax = new TimelineMax( { onComplete:onEnterAnimComplete } );
-			
-			tlEnterAnim.append( TweenMax.to( _titleMC, 1, { scaleX:0.8, scaleY:0.8, ease:Strong.easeIn } ) );
-			tlEnterAnim.append( TweenMax.to( _titleMC, 3, {  alpha:0, scaleX:3.0, scaleY:3.0, ease:Strong.easeOut } ) );
-			tlEnterAnim.play();
 		}
 		
 		private function createRagdolls(numberOfRagDolls:Number, rdX:Number, rdY:Number):void
@@ -207,13 +201,23 @@ package TestBed{
 		
 		private function onEnterAnimComplete():void
 		{
-			_mcMusic.gotoAndPlay( 1 );
-			_layerDancers.startDancing();
+//			_mcMusic.gotoAndPlay( 1 );
+//			_layerDancers.startDancing();
 			
-			//! mute the sound first
-//			var muteTransform:SoundTransform = new SoundTransform();
-//			muteTransform.volume = 0;
-//			_mcMusic.soundTransform = muteTransform;
+			if( this.m_sprite.contains( _layerTitle.assetMC ) )
+				this.m_sprite.removeChild( _layerTitle.assetMC );
+			
+			//! Show video
+			this.m_sprite.addChild( _layerMovie.assetSpr );
+			_layerMovie.playVideo();
+		}
+		
+		private function onIntroVideoComplete():void
+		{
+			_bFollowMouse = true;
+			_state = STATE_GAME_PLAYING;
+			_mcMusic.gotoAndPlay( 751 );
+			_layerDancers.startDancing();
 		}
 		
 		private function onShowCrowd( p_event:Event ):void
@@ -307,12 +311,8 @@ package TestBed{
 			
 			_player.resetEaseSpeed();
 			
-			this.m_sprite.addChild( _titleMC );
-			_titleMC.x = Constants.SCREEN_WIDTH * 0.5;
-			_titleMC.y = Constants.SCREEN_HEIGHT * 0.5 + 100;
-			_titleMC.scaleX = 1;
-			_titleMC.scaleY = 1;
-			_titleMC.alpha = 1;
+			this.m_sprite.addChild( _layerTitle.assetMC );
+			_layerTitle.resetLayer();
 		}
 		
 		public override function Update():void

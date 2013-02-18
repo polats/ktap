@@ -150,6 +150,32 @@ package KTAP.layers
 			}
 		}
 		
+		public function spawnStandingDancer( p_count:uint = 1 ):void
+		{
+			var i:uint = 0;
+			var nMax:uint = p_count;
+			var tmpItem:Dancer;
+			var randIdx:uint = 0;
+			
+			for( i = 0; i < nMax; i++ )
+			{
+				tmpItem = _arrPoolDancers.pop();
+				
+				if( tmpItem == null )
+				{
+					trace( "[Error] Dancer Pool Empty!" );
+					continue;
+				}
+				
+				randIdx = MathFunctions.RandomFromRange( 2, 3 ) -1;
+				tmpItem.randomizeDancerPosition( randIdx % 12 );
+				
+				_arrActiveDancers.push( tmpItem );
+				tmpItem.startDancing();
+				tmpItem.assetMC.gotoAndPlay( _officialFemaleDancerMC.currentFrame );
+			}
+		}
+		
 		public function update():void
 		{
 			for each ( var tmpDancer:Dancer in _arrActiveDancers )

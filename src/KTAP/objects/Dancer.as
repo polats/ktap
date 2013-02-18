@@ -86,10 +86,15 @@ package KTAP.objects
 			nTargetPosX = Math.max( nTargetPosX, 50 );
 			nTargetPosY = Math.max( nTargetPosY, 50 );
 			
-			_assetMC.visible = true;
 			_state = STATE_MOBBING;
 			//Cubic.easeOut
 			TweenMax.to( _assetMC, 1, { x:nTargetPosX, y:nTargetPosY, ease:Cubic.easeOut, onComplete:onMobMoveComplete } );
+		}
+		
+		public function startDancing():void
+		{
+			_assetMC.visible = true;
+			_state = STATE_DANCING;
 		}
 		
 		public function randomizeDancerPosition( p_corderIdx:int = -1 ):void

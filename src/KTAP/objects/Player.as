@@ -7,7 +7,7 @@ package KTAP.objects
 	
 	import org.osflash.signals.Signal;
 
-	public class Player
+	public  class Player
 	{	
 		private var _speedReductionTick:Number;
 		
