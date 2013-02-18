@@ -20,6 +20,7 @@ package
 		private var _assetMC:MovieClip;
 		private var _maskMC:MovieClip;
 		private var _txtInfo:TextField;
+		private var _txtLabel:TextField;
 		
 		private var _loader:LoaderMax;
 		
@@ -38,13 +39,15 @@ package
 			
 			_assetMC = new Asset_PreloaderMC();
 			this.addChild( _assetMC );
-			_assetMC.y = _assetMC.y - 25;
-			_assetMC.x = _assetMC.x + 3;
+			_assetMC.y = _assetMC.y + 1;//- 25;
+			_assetMC.x = _assetMC.x - 1;//+ 3;
 			
 			_maskMC = _assetMC["mc_mask"];
 			_txtInfo = _assetMC["txtInfo"];
+//			_txtLabel = _assetMC["txtLabel"];
 			
 			_txtInfo.mouseEnabled = false;
+//			_txtLabel.mouseEnabled = false;
 			
 			_txtInfo.text = "0%";
 			_nMaskStartPosX = _maskMC.x;
@@ -67,8 +70,8 @@ package
 		{
 			var percent:Number = p_event.bytesLoaded / p_event.bytesTotal;
 			
-			_nTotalPercent = Math.floor( percent * 100 ) - 50 ;
-			_txtInfo.text = "Loading: " + CMathFunctions.AddLeadingZero( _nTotalPercent ) + "%";
+			_nTotalPercent = Math.floor( percent * 100 ) * 0.5 ;
+			_txtInfo.text = "" + CMathFunctions.AddLeadingZero( _nTotalPercent ) + "%";
 			
 			_maskMC.x = _nMaskStartPosX - _maskMC.width + ( _maskMC.width * ( _nTotalPercent / 100 ) );
 			
@@ -89,6 +92,7 @@ package
 			var percent:Number =p_event.target.progress;
 			
 			_nTotalPercent = 50 + ( Math.floor( percent * 100 ) * 0.5 );
+			_txtInfo.text = "" + CMathFunctions.AddLeadingZero( _nTotalPercent ) + "%";
 			_maskMC.x = _nMaskStartPosX - _maskMC.width + ( _maskMC.width * ( _nTotalPercent / 100 ) );
 		}
 		

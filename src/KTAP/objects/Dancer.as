@@ -35,6 +35,8 @@ package KTAP.objects
 		
 		private var _assetMC:MovieClip;
 		private var _hitAreaMC:MovieClip;
+		
+		private var _originPt:Point;
 
 		private var _signalOnRecycle:Signal;
 		private var _signalOnAttach:Signal;
@@ -50,6 +52,8 @@ package KTAP.objects
 			{
 				_assetMC = new Asset_MaleDancerMC();
 			}
+			
+			_originPt = new Point();
 			
 			_hitAreaMC = _assetMC["mc_hitArea"];
 			
@@ -187,6 +191,9 @@ package KTAP.objects
 			
 			assetMC.x = posX;
 			assetMC.y = posY;
+			
+			_originPt.x = _assetMC.x;
+			_originPt.y = _assetMC.y;
 		}
 		
 		public function randomizeStandingDancerPosition():void
@@ -212,6 +219,9 @@ package KTAP.objects
 			
 			assetMC.x = posX;
 			assetMC.y = posY;
+			
+			_originPt.x = _assetMC.x;
+			_originPt.y = _assetMC.y;
 		}
 		
 		private function recycleMe():void
