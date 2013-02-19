@@ -15,9 +15,9 @@ package KTAP
 		
 		public static const MS_PER_METER:Number = 500.0;
 		
-		public static const DEFAULT_EASE_SPEED:Number = 0.1;
+		public static const DEFAULT_EASE_SPEED:Number = 0.25;
 		public static const SPEED_VALUE:Number = 5;
 		
-		public static const MAX_STICKY_DANCERS:Number = 30;
+		public static const MAX_STICKY_DANCERS:Number = 25;
 	}
 }
