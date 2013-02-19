@@ -150,6 +150,7 @@ package KTAP.layers
 			
 			for( i = 0; i < nMax; i++ )
 			{
+				tmpItem = _arrCollectibles[ i ];
 				tmpItem.recycleMe();
 			}
 			
