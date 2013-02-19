@@ -16,6 +16,8 @@ package KTAP
 		
 		public static var gameTimer:CTimer;
 		
+		public static var nCollectedLetters:int = 0;
+		
 		public static function initialize():void
 		{
 			easeSpeed = Constants.DEFAULT_EASE_SPEED;

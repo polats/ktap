@@ -32,11 +32,13 @@ package TestBed{
 	import KTAP.Constants;
 	import KTAP.Globals;
 	import KTAP.layers.LayerBackground;
+	import KTAP.layers.LayerCollectibles;
 	import KTAP.layers.LayerDancers;
 	import KTAP.layers.LayerGameOver;
 	import KTAP.layers.LayerMovie;
 	import KTAP.layers.LayerTitle;
 	import KTAP.math.MathFunctions;
+	import KTAP.objects.Collectible;
 	import KTAP.objects.Dancer;
 	import KTAP.objects.Player;
 	import KTAP.objects.Ragdoll;
@@ -95,6 +97,7 @@ package TestBed{
 		private var _layerGameOver:LayerGameOver;
 		private var _layerMovie:LayerMovie;
 		private var _layerTitle:LayerTitle;
+		private var _layerCollectible:LayerCollectibles;
 		
 		//! Containers Only
 		private var _sprRagdolls:Sprite;
@@ -122,6 +125,12 @@ package TestBed{
 			_layerMovie.signalOnVideoPlayComplete.add( onIntroVideoComplete );
 			
 //			this.m_sprite.addChild( _sprRagdolls );
+			
+			//! Letters
+			_layerCollectible = new LayerCollectibles();
+			_layerCollectible.signalLetterCollected.add( onLetterCollected );
+			this.m_sprite.addChild( _layerCollectible.assetSpr );
+			
 			
 			//! Dancers
 			_layerDancers = new LayerDancers();
@@ -202,8 +211,7 @@ package TestBed{
 		
 		private function onEnterAnimComplete():void
 		{
-//			_mcMusic.gotoAndPlay( 1 );
-//			_layerDancers.startDancing();
+			_mcMusic.gotoAndPlay( 1 );
 			
 			if( this.m_sprite.contains( _layerTitle.assetMC ) )
 				this.m_sprite.removeChild( _layerTitle.assetMC );
@@ -217,7 +225,7 @@ package TestBed{
 		{
 			_bFollowMouse = true;
 			_state = STATE_GAME_PLAYING;
-			_mcMusic.gotoAndPlay( 751 );
+//			_mcMusic.gotoAndPlay( 751 );
 			_layerDancers.startDancing();
 		}
 		
@@ -289,6 +297,26 @@ package TestBed{
 //			Globals.updateScrollSpeed( _player );
 		}
 		
+		private function onLetterCollected( p_item:Collectible ):void
+		{
+			Globals.nCollectedLetters = Globals.nCollectedLetters + 1;
+			trace( "Collected Count: " + Globals.nCollectedLetters );
+			
+			if( Globals.nCollectedLetters == 5 )
+			{
+				//! move the attached dancers away
+				_layerDancers.shoveAttachedDancers();
+				
+				//! reset collectibles
+				_layerCollectible.resetCollectibles();
+				
+				//! reset speeds
+				_player.resetEaseSpeed();
+				
+				Globals.nCollectedLetters = 0;
+			}
+		}
+		
 		private function onTryAgain():void
 		{
 			if( this.m_sprite.stage.contains( _layerGameOver.assetMC ) )
@@ -331,6 +359,7 @@ package TestBed{
 			{
 				Globals.gameTimer.updateTimer();
 				_layerDancers.updateSingleDancerSpawnTimer();
+				_layerCollectible.updateTimer();
 			}
 			
 			updateMousePosition();
@@ -338,6 +367,7 @@ package TestBed{
 			
 			_layerBackground.update();
 			_layerDancers.update();
+			_layerCollectible.update();
 		}
 		
 		private function updateMousePosition():void
@@ -369,7 +399,11 @@ package TestBed{
 			//playerRagdoll.head.SetPosition(new b2Vec2(Globals.heroPosPt.x / m_physScale,Globals.heroPosPt.y / m_physScale));
 		
 			if( _state == STATE_GAME_PLAYING )
+			{
 				_layerDancers.hitTestPlayer( _player );
+				_layerCollectible.hitTestPlayer( _player );
+			}
+				
 		}
 		
 		private function startFlashMob():void

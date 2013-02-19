@@ -234,6 +234,32 @@ package KTAP.layers
 			}
 		}
 		
+		public function shoveAttachedDancers():void
+		{
+			var i:int = 0;
+			var nMax:int = _arrActiveDancers.length;
+			var tmpDancer:Dancer;
+			var newPosPt:Point;
+			
+			for( i = 0; i < nMax; i++ )
+			{
+				tmpDancer = _arrActiveDancers[ i ];
+				
+				if( tmpDancer.state == Dancer.STATE_ATTACHED )
+				{
+					newPosPt = tmpDancer.assetMC.localToGlobal( new Point( tmpDancer.assetMC.x, tmpDancer.assetMC.y ) );
+					
+					_assetSpr.addChild( tmpDancer.assetMC );
+					tmpDancer.assetMC.scaleX = Dancer.DANCING_SCALE;
+					tmpDancer.assetMC.scaleY = Dancer.DANCING_SCALE;
+					tmpDancer.assetMC.x = newPosPt.x;
+					tmpDancer.assetMC.y = newPosPt.y;
+					
+					tmpDancer.moveAway();
+				}
+			}
+		}
+		
 		private function onDancerRecycle( p_dancer:Dancer ):void
 		{
 			var tmpIdx:int = _arrActiveDancers.indexOf( p_dancer );

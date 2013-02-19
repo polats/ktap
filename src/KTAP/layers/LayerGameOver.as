@@ -1,5 +1,8 @@
 package KTAP.layers
 {
+	import KTAP.Constants;
+	import KTAP.Globals;
+	
 	import com.greensock.TimelineMax;
 	import com.greensock.TweenMax;
 	import com.greensock.easing.Expo;
@@ -7,6 +10,7 @@ package KTAP.layers
 	
 	import flash.display.MovieClip;
 	import flash.events.MouseEvent;
+	import flash.text.TextField;
 	
 	import org.osflash.signals.Signal;
 
@@ -17,6 +21,8 @@ package KTAP.layers
 		private var _btnTryAgain:MovieClip;
 		private var _filterMC:MovieClip;
 		private var _gameOverMC:MovieClip;
+		private var _distanceMC:MovieClip;
+		private var _txtDistance:TextField;
 		
 		private var _tlEnterAnim:TimelineMax;
 		private var _tlTryAgainAnim:TimelineMax;
@@ -30,6 +36,11 @@ package KTAP.layers
 			_btnTryAgain = _assetMC["btnTryAgain"];
 			_filterMC = _assetMC["mc_filter"];
 			_gameOverMC = _assetMC["mc_gameOver"];
+			_distanceMC = _assetMC["mc_distanceInfo"];
+			_txtDistance = _distanceMC["txtDistance"];
+			
+			_distanceMC.mouseChildren = false;
+			_distanceMC.mouseEnabled = false;
 			
 			_btnTryAgain.buttonMode = true;
 			_btnTryAgain.mouseChildren = false;
@@ -47,6 +58,8 @@ package KTAP.layers
 			_tlEnterAnim.append( TweenMax.from( _filterMC, 0.7, { alpha:0, ease:Strong.easeOut } ) );
 			_tlEnterAnim.append( TweenMax.from( _gameOverMC, 0.5, { y:_gameOverMC.y - 50, alpha:0, ease:Strong.easeOut } ) );
 			_tlEnterAnim.append( TweenMax.from( _btnTryAgain, 0.4, { y:_btnTryAgain.y + 20, alpha:0, ease:Expo.easeOut } ), 0.3 );
+			_tlEnterAnim.append( TweenMax.from( _distanceMC, 0.4, { alpha:0, ease:Expo.easeOut } ), -0.4 );
+			
 			_tlEnterAnim.stop();
 			
 //			_tlEnterAnim.timeScale = 0.5;
@@ -56,6 +69,8 @@ package KTAP.layers
 			_tlTryAgainAnim.append( TweenMax.to( _filterMC, 1, { alpha:1, ease:Strong.easeIn } ) );
 			_tlTryAgainAnim.append( TweenMax.to( _gameOverMC, 0.3, { alpha:0, ease:Strong.easeOut } ), -0.5 );
 			_tlTryAgainAnim.append( TweenMax.to( _btnTryAgain, 0.3, { alpha:0, ease:Strong.easeOut } ), -0.3 );
+			_tlTryAgainAnim.append( TweenMax.to( _distanceMC, 0.3, { alpha:0, ease:Strong.easeOut } ), -0.3 );
+			
 			_tlTryAgainAnim.stop();
 			
 			_tlTryAgainAnim.timeScale = 0.8;
@@ -63,6 +78,8 @@ package KTAP.layers
 		
 		public function playEnterAnimation():void
 		{
+			_txtDistance.text = "" + ( Globals.gameTimer.timeElapsedMs / Constants.MS_PER_METER ) + " meters";
+			
 			_assetMC.mouseChildren = false;
 			_assetMC.mouseEnabled = false;
 			

@@ -12,6 +12,7 @@ package KTAP.objects
 	import com.greensock.easing.Strong;
 	
 	import flash.display.MovieClip;
+	import flash.geom.Orientation3D;
 	import flash.geom.Point;
 	
 	import flashx.textLayout.operations.MoveChildrenOperation;
@@ -20,7 +21,7 @@ package KTAP.objects
 
 	public class Dancer
 	{
-		private static const DANCING_SCALE:Number = 0.3;
+		public static const DANCING_SCALE:Number = 0.3;
 		
 		public static const STATE_HIDDEN:uint = 0;
 		public static const STATE_MOBBING:uint = 1;
@@ -99,6 +100,11 @@ package KTAP.objects
 		{
 			_assetMC.visible = true;
 			_state = STATE_DANCING;
+		}
+		
+		public function moveAway():void
+		{
+			TweenMax.to( _assetMC, 1, { x:_originPt.x, y:_originPt.y, ease:Strong.easeOut, onComplete:recycleMe } );
 		}
 		
 		public function randomizeDancerPosition( p_corderIdx:int = -1 ):void
@@ -215,7 +221,7 @@ package KTAP.objects
 			var nHalfScreenHeight:Number = Constants.SCREEN_HEIGHT * 0.5;
 			
 			posX = MathFunctions.RandomFromRange( 50, Constants.SCREEN_WIDTH - 50 );
-			posY = MathFunctions.RandomFromRange( nHalfScreenHeight * -1, 50 );
+			posY = MathFunctions.RandomFromRange( nHalfScreenHeight * -1, -50 );
 			
 			assetMC.x = posX;
 			assetMC.y = posY;
