@@ -129,6 +129,7 @@ package KTAP.layers
 					|| p_player.hitAreaFrontMC.hitTestObject( tmpItem.assetMC ) )
 				{
 					trace( "Letter Collected!" );
+//					p_player.playAcquireAnimation();
 					
 					tmpItem.setAsCollected();
 					if( _assetSpr.contains( tmpItem.assetMC ) )

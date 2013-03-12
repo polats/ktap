@@ -25,6 +25,10 @@ package KTAP
 			
 			if( gameTimer == null )
 				gameTimer = new CTimer( 0 );
+			
+			gameTimer.resetTimer();
+			
+			nCollectedLetters = 0;
 		}
 		
 		public static function updateScrollSpeed( p_player:Player ):void

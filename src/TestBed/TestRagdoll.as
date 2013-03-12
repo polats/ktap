@@ -35,6 +35,7 @@ package TestBed{
 	import KTAP.layers.LayerCollectibles;
 	import KTAP.layers.LayerDancers;
 	import KTAP.layers.LayerGameOver;
+	import KTAP.layers.LayerIngameUI;
 	import KTAP.layers.LayerMovie;
 	import KTAP.layers.LayerTitle;
 	import KTAP.math.MathFunctions;
@@ -98,6 +99,7 @@ package TestBed{
 		private var _layerMovie:LayerMovie;
 		private var _layerTitle:LayerTitle;
 		private var _layerCollectible:LayerCollectibles;
+		private var _layerIngameUI:LayerIngameUI;
 		
 		//! Containers Only
 		private var _sprRagdolls:Sprite;
@@ -138,6 +140,12 @@ package TestBed{
 			this.m_sprite.addChild( _layerDancers.assetSpr );
 			this.m_sprite.addChild( _sprPlayer );
 
+			//! IngameUI
+			_layerIngameUI = new LayerIngameUI();
+			_layerIngameUI.reset();
+			this.m_sprite.addChild( _layerIngameUI.assetMC );
+			_layerIngameUI.hide();
+			
 			//! Title
 			_layerTitle = new LayerTitle();
 			_layerTitle.signalOnEnterAnimComplete.add( onEnterAnimComplete );
@@ -224,6 +232,7 @@ package TestBed{
 		private function onIntroVideoComplete():void
 		{
 			_bFollowMouse = true;
+			_layerIngameUI.show();
 			_state = STATE_GAME_PLAYING;
 //			_mcMusic.gotoAndPlay( 751 );
 			_layerDancers.startDancing();
@@ -326,6 +335,9 @@ package TestBed{
 			
 			//! remove all dancers
 			_layerDancers.resetDancers();
+			_layerIngameUI.reset();
+			_layerIngameUI.hide();
+			_layerCollectible.resetCollectibles();
 			
 			Globals.initialize();
 			
@@ -336,6 +348,8 @@ package TestBed{
 			//! remove listener for update
 			_bGameHasStarted = false;
 			_bFollowMouse = false;
+			
+			_crowdIdx = 0;
 			
 			_player.resetEaseSpeed();
 			
@@ -360,6 +374,8 @@ package TestBed{
 				Globals.gameTimer.updateTimer();
 				_layerDancers.updateSingleDancerSpawnTimer();
 				_layerCollectible.updateTimer();
+				
+				_layerIngameUI.update();
 			}
 			
 			updateMousePosition();

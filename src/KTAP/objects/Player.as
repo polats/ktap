@@ -3,6 +3,10 @@ package KTAP.objects
 	import KTAP.Constants;
 	import KTAP.Globals;
 	
+	import com.greensock.TimelineMax;
+	import com.greensock.TweenMax;
+	import com.greensock.easing.Cubic;
+	
 	import flash.display.MovieClip;
 	
 	import org.osflash.signals.Signal;
@@ -66,6 +70,28 @@ package KTAP.objects
 		public function getPercentSpeedReduced():Number
 		{
 			return ( _easeSpeed / Constants.DEFAULT_EASE_SPEED );
+		}
+		
+		public function playAcquireAnimation():void
+		{
+			var _tlHitAnimation:TimelineMax = new TimelineMax();
+			
+			_tlHitAnimation.append( TweenMax.to( _assetMC, 0.2, { colorTransform: { tint:0xFFFFFF, tintAmount:0.4 }, ease:Cubic.easeIn } ) );
+			_tlHitAnimation.append( TweenMax.to( _assetMC, 0.2, { colorTransform: { tint:0xFFFFFF, tintAmount:0 }, ease:Cubic.easeOut } ) );
+			_tlHitAnimation.append( TweenMax.to( _assetMC, 0.2, { colorTransform: { tint:0xFFFFFF, tintAmount:0.4 }, ease:Cubic.easeIn } ) );
+			_tlHitAnimation.append( TweenMax.to( _assetMC, 0.3, { colorTransform: { tint:0xFFFFFF, tintAmount:0 }, ease:Cubic.easeOut } ) );
+			_tlHitAnimation.play();
+		}
+		
+		public function playAttachedAnimation():void
+		{
+			var _tlHitAnimation:TimelineMax = new TimelineMax();
+			
+			_tlHitAnimation.append( TweenMax.to( _assetMC, 0.2, { colorTransform: { tint:0xAA0000, tintAmount:0.4 }, ease:Cubic.easeIn } ) );
+			_tlHitAnimation.append( TweenMax.to( _assetMC, 0.2, { colorTransform: { tint:0xAA0000, tintAmount:0 }, ease:Cubic.easeOut } ) );
+			_tlHitAnimation.append( TweenMax.to( _assetMC, 0.2, { colorTransform: { tint:0xAA0000, tintAmount:0.4 }, ease:Cubic.easeIn } ) );
+			_tlHitAnimation.append( TweenMax.to( _assetMC, 0.3, { colorTransform: { tint:0xAA0000, tintAmount:0 }, ease:Cubic.easeOut } ) );
+			_tlHitAnimation.play();
 		}
 		
 		public function get assetMC():MovieClip

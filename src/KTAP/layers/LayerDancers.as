@@ -198,7 +198,7 @@ package KTAP.layers
 			_singleDancerSpawnTimer.updateTimer();
 			if( _singleDancerSpawnTimer.bHasElapsed )
 			{
-				var nRandCount:Number = CMathFunctions.RandomFromRange( 1, 3 );
+				var nRandCount:Number = CMathFunctions.RandomFromRange( 3, 5 );
 				
 				spawnStandingDancer( nRandCount );
 				
@@ -228,6 +228,7 @@ package KTAP.layers
 					
 					tmpDancer.attachToPlayer( p_player );
 					p_player.reduceEaseSpeed();
+//					p_player.playAttachedAnimation();
 					
 					_signalPlayerHit.dispatch();
 				}

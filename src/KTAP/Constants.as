@@ -10,8 +10,8 @@ package KTAP
 		public static const MAX_DANCERS3:Number = 5;
 		public static const MAX_DANCERS4:Number = 12;
 		
-		public static const MIN_TIME_SINGLE_DANCER_SPAWN_MS:Number = 2000;
-		public static const MAX_TIME_SINGLE_DANCER_SPAWN_MS:Number = 4000;
+		public static const MIN_TIME_SINGLE_DANCER_SPAWN_MS:Number = 1500;
+		public static const MAX_TIME_SINGLE_DANCER_SPAWN_MS:Number = 3500;
 		
 		public static const MS_PER_METER:Number = 500.0;
 		
